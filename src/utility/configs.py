@@ -28,6 +28,9 @@ kp = 500
 ki = 500
 # T_gen_el_limit = 2000
 
+# Controller
+w_ref_base = 1500 / 60 * 2 * np.pi
+
 
 # Simulation
 dt = 0.02
