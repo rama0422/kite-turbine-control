@@ -2,43 +2,44 @@ import math
 import numpy as np
 
 from src.utility.configs import rho, g
+from src.simulation.functions import path, path_p, path_pp, C_L, C_D, R_sc
 
 
-def path(p):
-    x = 53 + 17.7 * (math.cos(p) - math.sin(p))
-    y = 86.6 * math.sin(p/2)
-    z = 53 + 17.7 * (math.cos(p) + math.sin(p))
-    return np.array([x, y, z])
+# def path(p):
+#     x = 53 + 17.7 * (math.cos(p) - math.sin(p))
+#     y = 86.6 * math.sin(p/2)
+#     z = 53 + 17.7 * (math.cos(p) + math.sin(p))
+#     return np.array([x, y, z])
 
-def path_p(p):
-    x_p = 17.7 * (-math.sin(p) - math.cos(p))
-    y_p = 43.3 * math.cos(p/2)
-    z_p = 17.7 * (math.cos(p) - math.sin(p))
-    return np.array([x_p, y_p, z_p])
+# def path_p(p):
+#     x_p = 17.7 * (-math.sin(p) - math.cos(p))
+#     y_p = 43.3 * math.cos(p/2)
+#     z_p = 17.7 * (math.cos(p) - math.sin(p))
+#     return np.array([x_p, y_p, z_p])
 
-def path_pp(p):
-    x_pp = 17.7 * (-math.cos(p) + math.sin(p))
-    y_pp = -21.65 * math.sin(p/2)
-    z_pp = 17.7 * (-math.sin(p) - math.cos(p))
-    return np.array([x_pp, y_pp, z_pp])
+# def path_pp(p):
+#     x_pp = 17.7 * (-math.cos(p) + math.sin(p))
+#     y_pp = -21.65 * math.sin(p/2)
+#     z_pp = 17.7 * (-math.sin(p) - math.cos(p))
+#     return np.array([x_pp, y_pp, z_pp])
 
-# def stabilityBasis:
-#     e1 = 
+# # def stabilityBasis:
+# #     e1 = 
 
-#TODO
-def C_L(alpha):
-    c = 0.15
-    return c
+# #TODO
+# def C_L(alpha):
+#     c = 0.15
+#     return c
 
-def C_D(alpha):
-    c = 0.0275
-    return c
+# def C_D(alpha):
+#     c = 0.0275
+#     return c
 
-def R_sc(a):
-    a = -a
-    return (np.array([[math.cos(a), 0, math.sin(a)],
-                      [0, 1, 0],
-                      [-math.sin(a), 0, math.cos(a)]]))
+# def R_sc(a):
+#     a = -a
+#     return (np.array([[math.cos(a), 0, math.sin(a)],
+#                       [0, 1, 0],
+#                       [-math.sin(a), 0, math.cos(a)]]))
 
 
 class Kite:

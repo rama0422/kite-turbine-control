@@ -6,6 +6,9 @@ v_current_i = np.array([1.5,0,0])
 g = 9.81
 
 # Path
+R_path = 80
+r_path = 3
+theta_path = 30 / 180 * np.pi
 
 # Kite
 S = 4.9*1.5 #TODO from image and known width

@@ -53,13 +53,17 @@ TSRs = np.array(kiteSystem.turbine.data_log["TSRs"])
 
 fix, ax = plt.subplots(4,2, figsize=(15,9))
 
-ax[0,0].plot(sol.t, sol.y[0])
+ax[0,0].plot(sol.t, sol.y[0] % (4*math.pi))
+ax[0,0].set_title(r"$p(t)$")
 
 ax[1,0].plot(sol.t, sol.y[1])
+ax[1,0].set_title(r"$\dot{p}(t)$")
 
 ax[2,0].plot(sol.t, sol.y[2])
+ax[2,0].set_title(r"$\omega_{gen}(t)$")
 
 ax[3,0].plot(sol.t, sol.y[3])
+ax[3,0].set_title(r"$I(t)$")
 
 ax[0,1].plot(ts, np.linalg.norm(Fs_aero_i, axis=1))
 ax[0,1].plot(ts, np.linalg.norm(Fs_buoy_i, axis=1))
