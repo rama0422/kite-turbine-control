@@ -16,6 +16,8 @@ class FullSystemModel:
                             "v_kite_i": [],
                             "v_rel_i": [],
                             "v_rel_abs": [],
+                            "alpha_pc": [],
+                            "alpha_pb": [],
                             "alpha": [],
                             "Fs_aero": [],
                             "Fs_grav": [],
@@ -33,7 +35,7 @@ class FullSystemModel:
 
         r, r_p, r_pp, e1, e2, e3, R_si = self.kite.kinematics(p)
 
-        v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha = self.kite.relativeVelocity(pdot, r_p, R_si, v_current_i)
+        v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha_pc, alpha_pb, alpha = self.kite.relativeVelocity(p, pdot, r_p, R_si, v_current_i)
 
         [wdot_gen, Idot] = self.turbine.turbineDynamics(t, [w_gen, I], v_rel_abs, w_ref)
         # F_turb = self.turbine.F_turb
@@ -49,7 +51,10 @@ class FullSystemModel:
         self.data_log["v_kite_i"].append(v_kite_i)
         self.data_log["v_rel_i"].append(v_rel_i)
         self.data_log["v_rel_abs"].append(v_rel_abs)
+        self.data_log["alpha_pc"].append(alpha_pc)
+        self.data_log["alpha_pb"].append(alpha_pb)
         self.data_log["alpha"].append(alpha)
+
         self.data_log["Fs_aero"].append(F_aero_i)
         self.data_log["Fs_grav"].append(F_mg_i)
         self.data_log["Fs_buoy"].append(F_b_i)

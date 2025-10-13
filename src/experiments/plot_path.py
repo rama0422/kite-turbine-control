@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 
-from src.simulation.functions import path, path_p, path_pp
+from src.simulation.functions import path, path_p, path_pp, TJpitch
 
 
 #TODO: change to path dependant on R, r and d like in paper
@@ -121,5 +121,27 @@ plt.tight_layout()
 
 
 # plt.savefig("3d_view(noforces).png", dpi=300, bbox_inches='tight', pad_inches=0)
-plt.show()
+# plt.show()
 
+
+
+### p dependant added alpha
+
+alphas_kite = [TJpitch(p) for p in ps]
+
+# print(alpha_kite)
+
+fig, ax = plt.subplots(2,1, figsize=(8,8))
+ax[0].plot(ps, alphas_kite)
+ax[0].set_title("Kite-tether angle")
+ax[0].set_xlabel("p")
+ax[0].set_ylabel(r"TJpitchAngle")
+ax[0].grid()
+
+ax[1].plot(ps, z)
+ax[1].set_title(r"Height $z$")
+ax[1].set_xlabel("p")
+ax[1].set_ylabel("z")
+ax[1].grid()
+
+plt.show()

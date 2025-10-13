@@ -2,7 +2,7 @@ import math
 import numpy as np
 
 from src.utility.configs import rho, g
-from src.simulation.functions import path, path_p, path_pp, C_L, C_D, R_sc
+from src.simulation.functions import path, path_p, path_pp, TJpitch, C_L, C_D, R_sc
 
 
 class Kite:
@@ -29,6 +29,8 @@ class Kite:
                          "v_kite_i": [],
                          "v_rel_i": [],
                          "v_rel_abs": [],
+                         "alpha_pc": [],
+                         "alpha_pb": [],
                          "alpha": [],
                          "Fs_aero": [],
                          "Fs_grav": [],
@@ -57,23 +59,24 @@ class Kite:
         return r, r_p, r_pp, e1, e2, e3, R_si
 
     # Calculate velocities of kite and absolute angle of attack
-    def relativeVelocity(self, pdot, r_p, R_si, v_current_i):
+    def relativeVelocity(self, p, pdot, r_p, R_si, v_current_i):
         # Relative water velocity
         v_kite_i = r_p * pdot
         v_rel_i = v_current_i - v_kite_i
 
         v_rel_s = R_si.T @ v_rel_i
 
-        alpha_ic = np.atan2(-v_rel_s[2], -v_rel_s[0])# angle between axis e1 and v_rel_s
+        alpha_pc = np.atan2(-v_rel_s[2], -v_rel_s[0])# angle between axis e1 and v_rel_s
         # print(v_rel_s)
         v_rel_c = np.array([math.sqrt(v_rel_s[2]**2 + v_rel_s[0]**2), 0, 0])
 
         v_rel_abs = v_rel_c[0]
 
-        # Forces in current frame
-        alpha = alpha_ic #TODO
+        alpha_pb = TJpitch(p) * math.pi / 180
+        alpha = alpha_pc + alpha_pb #TODO correct sign? alpha_pb has opposit positive direction to alpha_pc, therefore we get -(-alpha_pb)
+        
 
-        return v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha
+        return v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha_pc, alpha_pb, alpha
     
     # CAlculate forces acting on kite and their resulting acceleration along the path
     def accleration(self, pdot, r_p, r_pp, e1, e3, R_si, v_rel_abs, alpha, F_turb = 0):
@@ -115,7 +118,7 @@ class Kite:
 
         r, r_p, r_pp, e1, e2, e3, R_si = self.kinematics(p)
 
-        v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha = self.relativeVelocity(pdot, r_p, R_si, v_current_i)
+        v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha_pc, alpha_pb, alpha = self.relativeVelocity(p, pdot, r_p, R_si, v_current_i)
 
         pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether = self.accleration(pdot, r_p, r_pp, e1, e3, R_si, v_rel_abs, alpha, F_turb)
         self.F_thether = F_thether
@@ -128,6 +131,8 @@ class Kite:
         self.data_log["v_kite_i"].append(v_kite_i)
         self.data_log["v_rel_i"].append(v_rel_i)
         self.data_log["v_rel_abs"].append(v_rel_abs)
+        self.data_log["alpha_pc"].append(alpha_pc)
+        self.data_log["alpha_pb"].append(alpha_pb)
         self.data_log["alpha"].append(alpha)
         self.data_log["Fs_aero"].append(F_aero_i)
         self.data_log["Fs_grav"].append(F_mg_i)

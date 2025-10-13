@@ -2,7 +2,7 @@ import math
 import numpy as np
 import sympy as sp
 
-from src.utility.configs import rho, g, R_path, r_path, theta_path
+from src.utility.configs import rho, g, R_path, r_path, theta_path, TJpitch_amp, TJpitch_offset, TJpitch_shift
 
 
 ########### KITE #############
@@ -31,6 +31,10 @@ def path_p(p):
 
 def path_pp(p):
     return np.array(path_pp_lamb(p, R_path, r_path, theta_path))
+
+#  TJPitchAngle in degrees (tether-joint)
+def TJpitch(p):
+    return TJpitch_amp * math.sin(p + TJpitch_shift) + TJpitch_offset
 
 # def path(p):
 #     sub = (R_path - r_path)

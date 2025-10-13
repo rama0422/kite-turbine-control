@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 # Enviorment
 rho = 1025
@@ -6,9 +7,14 @@ v_current_i = np.array([1.5,0,0])
 g = 9.81
 
 # Path
-R_path = 55
-r_path = 7
-theta_path = 30 / 180 * np.pi
+R_path = 60
+r_path = 5 # elevation changes around 10 m durign cycle (from data) d = 5*2 = 10
+theta_path = 15 / 180 * np.pi # 15 deg gives similar elevation as in data
+
+# Path dependant pitch angle (TJPitchAngle)
+TJpitch_offset = 0
+TJpitch_amp = 2
+TJpitch_shift = math.pi/3
 
 # Kite
 S = 4.9*1.5 #TODO from image and known width
