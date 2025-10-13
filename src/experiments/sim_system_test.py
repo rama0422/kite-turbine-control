@@ -17,7 +17,7 @@ kiteSystem = FullSystemModel(kite, trubine)
 v_current_i = np.array([2,0,0])
 p0 = 0
 pdot0 = 0.2
-w0_gen = 1400 / 60 * 2 * math.pi
+w0_gen = 1900 / 60 * 2 * math.pi
 I0 = 0
 x0 = [p0, pdot0, w0_gen, I0]
 
@@ -47,6 +47,7 @@ Ts_gen_el = np.array(kiteSystem.turbine.data_log["Ts_gen_el"])
 ws_ref = np.array(kiteSystem.turbine.data_log["ws_ref"])
 errors = np.array(kiteSystem.turbine.data_log["errors"])
 TSRs = np.array(kiteSystem.turbine.data_log["TSRs"])
+P_gen_out = np.array(kiteSystem.turbine.data_log["P_gen_out"])
 # vs_rel = np.array(kiteSystem.turbine.data_log["vs_rel"])
 
 # print(ts1.shape == ts.shape)
@@ -59,7 +60,9 @@ ax[0,0].set_title(r"$p(t)$")
 ax[1,0].plot(sol.t, sol.y[1])
 ax[1,0].set_title(r"$\dot{p}(t)$")
 
-ax[2,0].plot(sol.t, sol.y[2])
+ax[2,0].plot(sol.t, sol.y[2]* 60 / (2*math.pi))
+ax[2,0].plot(ts, ws_ref * 60 / (2*math.pi))
+ax[2,0].legend([r"$\omega_{gen}$", r"$\omega_{gen,ref}$"])
 ax[2,0].set_title(r"$\omega_{gen}(t)$")
 
 ax[3,0].plot(sol.t, sol.y[3])
@@ -77,9 +80,15 @@ ax[0,1].set_xlabel("Time [s]")
 
 ax[1,1].plot(ts, np.linalg.norm(vs_kite_i, axis=1))
 ax[1,1].plot(ts, np.linalg.norm(vs_rel_i, axis=1))
-ax[1,1].set_title("Linear kite speed")
+# ax[1,1].plot(ts, np.linalg.norm(v_current_i, axis=1))
+ax[1,1].axhline(y=np.linalg.norm(v_current_i))
+ax[1,1].set_title("Linear velocities")
 ax[1,1].set_xlabel("Time [s]")
-ax[1,1].legend([r"$|v_{kite,i}|$", r"$|v_{rel,i}|$"])
+ax[1,1].legend([r"$|v_{kite,i}|$", r"$|v_{rel,i}|$", r"$|v_{current,i}|$"])
+
+ax[2,1].plot(ts, P_gen_out/1000)
+ax[2,1].axhline(y=0, color='k', linestyle='--', linewidth=0.7)
+ax[2,1].set_title(r"Generator power [kW]")
 
 plt.tight_layout(pad=1.0)
 plt.show()

@@ -6,8 +6,8 @@ v_current_i = np.array([1.5,0,0])
 g = 9.81
 
 # Path
-R_path = 80
-r_path = 3
+R_path = 55
+r_path = 7
 theta_path = 30 / 180 * np.pi
 
 # Kite
@@ -23,8 +23,8 @@ r_turb = 0.5
 J_gen = 5
 # P_gen_max = 2000
 T_gen_max = 500
-w_gen_max = 3000
-w_gen_max_T = 1500
+w_gen_max = 4000
+w_gen_max_T = 500
 
 eff_gear = 0.99
 kp = 500
@@ -32,7 +32,7 @@ ki = 500
 # T_gen_el_limit = 2000
 
 # Controller
-w_ref_base = 1500 / 60 * 2 * np.pi
+w_ref_base = 2000 / 60 * 2 * np.pi
 
 
 # Simulation

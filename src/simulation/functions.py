@@ -55,12 +55,16 @@ def path_pp(p):
 #     e1 = 
 
 #TODO: Add variable C_L, C_D
+# https://www.osti.gov/servlets/purl/1907523
+#TODO: alpha in degrees?
 def C_L(alpha):
-    c = 0.15
+    alpha = alpha * 180 / math.pi
+    c = 6.25*1e-2 * alpha + 1.33*1e-1
     return c
 
 def C_D(alpha):
-    c = 0.0275
+    alpha = alpha * 180 / math.pi
+    c = 2.442*1e-4 * alpha**2 + 1.06*1e-3 * alpha + 2.22*1e-3
     return c
 
 def R_sc(a):

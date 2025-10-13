@@ -33,6 +33,7 @@ class Turbine:
                          "ws_ref": [],
                          "errors": [],
                          "TSRs": [],
+                         "P_gen_out": [],
                          "vs_rel": []}
 
 
@@ -68,7 +69,7 @@ class Turbine:
             T_gen_el = max(min(T_gen_el, temp_max_T), -temp_max_T)
 
 
-        P_gen_out = T_gen_el * w_gen
+        P_gen_out = -T_gen_el * w_gen
         #TODO: add loses through Torque-speed curve of generator
 
         # if (t <= print_time):
@@ -91,6 +92,7 @@ class Turbine:
         self.data_log["ws_ref"].append(w_ref)
         self.data_log["errors"].append(w_error)
         self.data_log["TSRs"].append(TSR)
+        self.data_log["P_gen_out"].append(P_gen_out)
         self.data_log["vs_rel"].append(v_rel)
 
         return [wdot_gen, Idot]

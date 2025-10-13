@@ -18,6 +18,9 @@ class Kite:
         # self.F_tot = np.array([0,0,0])
         self.F_thether = 0
 
+        #TODO: retrive acc and gyro data for simulated IMU
+        #TODO: add measurments with noise?
+
         # Data logging #TODO: as np arrays for efficiency? give steps using dt and t_end to class
         self.data_log = {"ts": [],
                          "r": [],
