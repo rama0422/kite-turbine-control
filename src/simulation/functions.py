@@ -11,7 +11,7 @@ from src.utility.configs import rho, g, R_path, r_path, theta_path
 p_sym, R_sym, r_sym, theta_sym = sp.symbols('p_sym R_sym r_sym theta_sym', real=True)
 
 sub = (R_sym - r_sym)
-x = sub * sp.cos(theta_sym) + r_sym * sp.cos(p_sym) * sp.cos(theta_sym) - r_sym * sp.sin(p_sym)**2
+x = sub * sp.cos(theta_sym) + r_sym * sp.cos(p_sym) * sp.cos(theta_sym) - r_sym * sp.sin(p_sym) * sp.sin(theta_sym)
 y = 2 * sp.sqrt(sub * r_sym) * sp.sin(p_sym / 2)
 z = sub * sp.sin(theta_sym) + r_sym * sp.cos(p_sym) * sp.sin(theta_sym) + r_sym * sp.sin(p_sym) * sp.cos(theta_sym)
 

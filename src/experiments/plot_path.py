@@ -3,25 +3,27 @@ import math
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 
+from src.simulation.functions import path, path_p, path_pp
+
 
 #TODO: change to path dependant on R, r and d like in paper
-def path(p):
-    x = 53 + 17.7 * (math.cos(p) - math.sin(p))
-    y = 86.6 * math.sin(p/2)
-    z = 53 + 17.7 * (math.cos(p) + math.sin(p))
-    return np.array([x, y, z])
+# def path(p):
+#     x = 53 + 17.7 * (math.cos(p) - math.sin(p))
+#     y = 86.6 * math.sin(p/2)
+#     z = 53 + 17.7 * (math.cos(p) + math.sin(p))
+#     return np.array([x, y, z])
 
-def path_p(p):
-    x_p = 17.7 * (-math.sin(p) - math.cos(p))
-    y_p = 43.3 * math.cos(p/2)
-    z_p = 17.7 * (math.cos(p) - math.sin(p))
-    return np.array([x_p, y_p, z_p])
+# def path_p(p):
+#     x_p = 17.7 * (-math.sin(p) - math.cos(p))
+#     y_p = 43.3 * math.cos(p/2)
+#     z_p = 17.7 * (math.cos(p) - math.sin(p))
+#     return np.array([x_p, y_p, z_p])
 
-def path_pp(p):
-    x_pp = 17.7 * (-math.cos(p) + math.sin(p))
-    y_pp = -21.65 * math.sin(p/2)
-    z_pp = 17.7 * (-math.sin(p) - math.cos(p))
-    return np.array([x_pp, y_pp, z_pp])
+# def path_pp(p):
+#     x_pp = 17.7 * (-math.cos(p) + math.sin(p))
+#     y_pp = -21.65 * math.sin(p/2)
+#     z_pp = 17.7 * (-math.sin(p) - math.cos(p))
+#     return np.array([x_pp, y_pp, z_pp])
 
 
 # Store path points
@@ -38,10 +40,10 @@ for p in ps:
     z.append(coord[2])
 
     
-current = [2,0,0] # wind in x direction
+v_current_i = [2,0,0] # wind in x direction
 
 # Plot path
-fig = plt.figure(figsize=(7,7))
+fig = plt.figure(figsize=(10,10))
 ax = plt.axes(projection = '3d')
 ax.set_box_aspect([1, 2, 1])
 
@@ -64,8 +66,6 @@ ax.plot(r_show[0], r_show[1], r_show[2], 'ko')
 # tangent at show point
 # ax.quiver(r_show[0], r_show[1], r_show[2], rp_show[0], rp_show[1], rp_show[2], length=0.5, color='r')
 
-
-
 # path basis
 ehat_length_ratio = 15
 ax.quiver(r_show[0], r_show[1], r_show[2], e1[0], e1[1], e1[2], length=ehat_length_ratio, color='r')
@@ -74,7 +74,6 @@ ax.quiver(r_show[0], r_show[1], r_show[2], e2[0], e2[1], e2[2], length=ehat_leng
 ax.text(r_show[0]+e2[0]*ehat_length_ratio-2, r_show[1]+e2[1]*ehat_length_ratio, r_show[2]+e2[2]*ehat_length_ratio+1, r"$\hat{e}_2$", color='g')
 ax.quiver(r_show[0], r_show[1], r_show[2], e3[0], e3[1], e3[2], length=ehat_length_ratio, color='b')
 ax.text(r_show[0]+e3[0]*ehat_length_ratio+2, r_show[1]+e3[1]*ehat_length_ratio, r_show[2]+e3[2]*ehat_length_ratio-6, r"$\hat{e}_3$", color='b')
-
 
 # inertial basis
 inertial_length_ratio = 60
@@ -92,12 +91,12 @@ ax.set_axis_off() # turn off the plt axis
 
 # current direction
 c_length_ratio = 15
-ax.quiver(0,-50,0, current[0], current[1], current[2], length=c_length_ratio, color='k', arrow_length_ratio=0.15)
-ax.text(0+current[0]*c_length_ratio+4, -50+current[1]*c_length_ratio, 0+current[2]*c_length_ratio-3, r"$\vec{v}_{current}^{(i)}$", color='k')
+ax.quiver(0,-50,0, v_current_i[0], v_current_i[1], v_current_i[2], length=c_length_ratio, color='k', arrow_length_ratio=0.15)
+ax.text(0+v_current_i[0]*c_length_ratio+4, -50+v_current_i[1]*c_length_ratio, 0+v_current_i[2]*c_length_ratio-3, r"$\vec{v}_{v_current_i}^{(i)}$", color='k')
 
 # relative to kite
 # k_speed_ratio = 1
-# ax.quiver(r_show[0], r_show[1], r_show[2], current[0]-rp_show[0]*k_speed_ratio, current[1]-rp_show[1]*k_speed_ratio, current[2]-rp_show[2]*k_speed_ratio, length=1, color='c', arrow_length_ratio=0.15)
+# ax.quiver(r_show[0], r_show[1], r_show[2], v_current_i[0]-rp_show[0]*k_speed_ratio, v_current_i[1]-rp_show[1]*k_speed_ratio, v_current_i[2]-rp_show[2]*k_speed_ratio, length=1, color='c', arrow_length_ratio=0.15)
 
 # tether 
 ax.plot([0, r_show[0]], [0, r_show[1]], [0, r_show[2]], 'k--', linewidth=0.5)
@@ -120,7 +119,7 @@ ax.set_zlim(0, 100)
 ax.view_init(elev=25, azim=-55, roll=0)
 plt.tight_layout()
 
-# plt.savefig("3d_view(noforces).png", dpi=300, bbox_inches='tight', pad_inches=0)
 
+# plt.savefig("3d_view(noforces).png", dpi=300, bbox_inches='tight', pad_inches=0)
 plt.show()
 
