@@ -3,18 +3,9 @@ import math
 
 # from src.utility.configs import r_turb, J_gen, T_gen_max, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki, rho
 from src.utility.configs import rho
+from src.simulation.functions import Cp, Cf
 
 
-
-def Cp(TSR):
-    x = TSR
-    y = -0.1538643 + 0.4473311*x - 0.09631951*x**2 + 0.003482307*x**3
-    return max(y,0)
-
-def Cf(TSR):
-    x = TSR
-    y = 0.88 - 0.1187302*x + 0.02369048*x**2 - 0.004722222*x**3
-    return max(y,0)
 
 class Turbine:
     def __init__(self, r_turb, J_gen, T_gen_max, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki):

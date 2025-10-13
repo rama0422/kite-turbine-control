@@ -4,6 +4,8 @@ import sympy as sp
 
 from src.utility.configs import rho, g, R_path, r_path, theta_path
 
+
+########### KITE #############
 # TODO: make sure these are only calculated once per run
 # path functions
 p_sym, R_sym, r_sym, theta_sym = sp.symbols('p_sym R_sym r_sym theta_sym', real=True)
@@ -52,7 +54,7 @@ def path_pp(p):
 # def stabilityBasis:
 #     e1 = 
 
-#TODO
+#TODO: Add variable C_L, C_D
 def C_L(alpha):
     c = 0.15
     return c
@@ -66,3 +68,15 @@ def R_sc(a):
     return (np.array([[math.cos(a),  0, math.sin(a)],
                       [0,            1, 0],
                       [-math.sin(a), 0, math.cos(a)]]))
+
+
+############## TURBINE #############
+def Cp(TSR):
+    x = TSR
+    y = -0.1538643 + 0.4473311*x - 0.09631951*x**2 + 0.003482307*x**3
+    return max(y,0)
+
+def Cf(TSR):
+    x = TSR
+    y = 0.88 - 0.1187302*x + 0.02369048*x**2 - 0.004722222*x**3
+    return max(y,0)

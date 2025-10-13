@@ -7,18 +7,7 @@ from src.simulation.kite_model import Kite
 from src.utility.configs import rho, g, S, m, vol, dt, t_end
 
 
-
-# turbine = Turbine(r_turb, J_gen, T_gen_max, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki)
 kite = Kite(S, m, vol)
-
-
-# # time varying v_rel and w_ref functions
-# def v_rel_fun(t):
-#     return 5 + 1.5*math.sin(0.5*t)
-
-# def w_ref_fun(t):
-#     return 1500 / 60 * 2 * math.pi + 30*math.sin(0.5*t)
-
 
 # Simulation params
 v_current_i = np.array([2,0,0])
