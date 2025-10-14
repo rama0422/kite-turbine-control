@@ -88,3 +88,36 @@ def Cf(TSR):
     x = TSR
     y = 0.88 - 0.1187302*x + 0.02369048*x**2 - 0.004722222*x**3
     return max(y,0)
+
+
+        #  500               500        
+        # 4000               250        
+        # 1000               440        
+        # 2000               360        
+        # 3000               290       
+        # 
+def MaxTorqueSpeed(T_in, w_in, T_max, T_max_w, w_max, w_max_T, m, b):
+    T = abs(T_in)
+    if (w_in < w_max_T ):
+        T_out = min(T, T_max)
+        w_out = w_in
+    elif (w_in > w_max):
+        w_out = w_in #TODO: or lock it?
+        T_out = T_max_w
+    else:
+        T_max_temp =  m * w_in + b
+        T_out = min(T, T_max_temp)
+        w_out = w_in
+
+    if (T_in < 0):
+        T_out = -T_out
+
+    return T_out, w_out
+     
+
+# if (w_gen < self.w_gen_max_T):
+#             T_gen_el = max(min(T_gen_el, self.T_gen_max), -self.T_gen_max)
+#         else:
+#             temp_w = w_gen*60/(2*math.pi)
+#             temp_max_T = 965.0754 - 0.3595477*temp_w + 0.00003567839*temp_w**2
+#             T_gen_el = max(min(T_gen_el, temp_max_T), -temp_max_T)

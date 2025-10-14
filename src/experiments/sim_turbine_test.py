@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
 from src.simulation.turbine_model import Turbine
-from src.utility.configs import r_turb, J_gen, T_gen_max, w_gen_max, w_gen_max_T, w_ref_base, N_gear, eff_gear, kp, ki, rho, dt, t_end
+from src.utility.configs import r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, w_ref_base, N_gear, eff_gear, kp, ki, rho, dt, t_end
 
 
 
-turbine = Turbine(r_turb, J_gen, T_gen_max, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki)
+turbine = Turbine(r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki)
 
 
 # time varying v_rel and w_ref functions
@@ -73,7 +73,6 @@ ax[1,1].legend([r"$v_{rel}$", r"$\omega_{gen,ref}(moved)$"])
 ax[2,1].plot(ts, P_gen_out/1000)
 ax[2,1].axhline(y=0, color='k', linestyle='--', linewidth=0.7)
 ax[2,1].set_title(r"Generator power [kW]")
-
 
 
 plt.tight_layout()

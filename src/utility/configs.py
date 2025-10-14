@@ -29,8 +29,9 @@ r_turb = 0.5
 J_gen = 5
 # P_gen_max = 2000
 T_gen_max = 500
-w_gen_max = 4000
-w_gen_max_T = 500
+T_gen_max_w = 250
+w_gen_max = 4000 / 60 * 2 * np.pi
+w_gen_max_T = 1000 / 60 * 2 * np.pi
 
 eff_gear = 0.99
 kp = 500
@@ -43,4 +44,4 @@ w_ref_base = 2000 / 60 * 2 * np.pi
 
 # Simulation
 dt = 0.02
-t_end = 100
+t_end = 40

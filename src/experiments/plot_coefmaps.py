@@ -2,7 +2,8 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.simulation.functions import C_L, C_D, Cp, Cf
+from src.utility.configs import T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T
+from src.simulation.functions import C_L, C_D, Cp, Cf, MaxTorqueSpeed
 
 # lift and drag coefficients
 alphas = np.linspace(-100, 100, 100) * math.pi / 180
@@ -23,7 +24,7 @@ ax[1].set_xlabel("AoA")
 ax[1].set_ylabel("$C_D$")
 
 plt.tight_layout()
-plt.show()
+# plt.show()
 
 
 # power and force coefficients
@@ -45,4 +46,29 @@ ax[1].set_xlabel("Tip speed ratio $\\lambda$")
 ax[1].set_ylabel("$C_F$")
 
 plt.tight_layout()
+# plt.show()
+
+## Torque-speed
+# fit T-w curve
+ws = np.array([w_gen_max_T, w_gen_max])
+Ts = np.array([T_gen_max, T_gen_max_w])
+
+m, b = np.polyfit(ws, Ts, 1)
+
+print(m,b)
+
+l = 100
+ws_in = np.linspace(0, w_gen_max+200, l)
+torques_in = np.ones(l) * -1000
+tws = np.column_stack((ws_in, torques_in))
+# print(tws)
+torques_out, ws_out = zip(*[MaxTorqueSpeed(tw[1], tw[0], T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, m, b) for tw in tws])
+
+fig = plt.figure()
+
+plt.plot(np.array(ws_out) * 60 / (2*math.pi), torques_out)
+# plt.ylim([0,T_gen_max+100])
+plt.xlabel(r"$\omega$")
+plt.ylabel(r"T")
+plt.title(r"$T-\omega$ curve")
 plt.show()
