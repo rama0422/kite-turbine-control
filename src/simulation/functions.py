@@ -58,17 +58,31 @@ def TJpitch(p):
 # def stabilityBasis:
 #     e1 = 
 
-#TODO: Add variable C_L, C_D
 # https://www.osti.gov/servlets/purl/1907523
 #TODO: alpha in degrees?
+# def C_L(alpha):
+#     alpha = alpha * 180 / math.pi
+#     c = 6.25*1e-2 * alpha + 1.33*1e-1
+#     return c
+
+# def C_D(alpha):
+#     alpha = alpha * 180 / math.pi
+#     c = 2.442*1e-4 * alpha**2 + 1.06*1e-3 * alpha + 2.22*1e-3
+#     return c
+
+# https://odr.chalmers.se/server/api/core/bitstreams/e9a88fb7-0b47-4155-857d-599210900918/content
+# https://www.researchgate.net/publication/308400130_Modeling_and_Simulation_of_Tethered_Undersea_Kites
 def C_L(alpha):
     alpha = alpha * 180 / math.pi
-    c = 6.25*1e-2 * alpha + 1.33*1e-1
+    if (abs(alpha) > 20):
+        c = 5.15*1e-10 * alpha**5 + 7.3*1e-24 * alpha**4 - 9.06*1e-6 * alpha**3 - 9.06*1e-20 * alpha**2 + 0.0405 * alpha + 0.2
+    else:
+        c = -2.27*1e-4 * alpha**3 - 1.65*1e-19 * alpha**2 + 0.123 * alpha + 0.2
     return c
 
-def C_D(alpha):
+def C_D(alpha, C_L):
     alpha = alpha * 180 / math.pi
-    c = 2.442*1e-4 * alpha**2 + 1.06*1e-3 * alpha + 2.22*1e-3
+    c = 0.05 + C_L**2 / (math.pi * 0.9 * 3) # see sources
     return c
 
 def R_sc(a):

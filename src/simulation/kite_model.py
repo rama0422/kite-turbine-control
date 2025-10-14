@@ -80,8 +80,9 @@ class Kite:
     
     # CAlculate forces acting on kite and their resulting acceleration along the path
     def accleration(self, pdot, r_p, r_pp, e1, e3, R_si, v_rel_abs, alpha, F_turb = 0):
-        F_L = 0.5 * rho * v_rel_abs**2 * self.S * C_L(alpha)
-        F_D = 0.5 * rho * v_rel_abs**2 * self.S * C_D(alpha)
+        C_L_temp = C_L(alpha)
+        F_L = 0.5 * rho * v_rel_abs**2 * self.S * C_L_temp
+        F_D = 0.5 * rho * v_rel_abs**2 * self.S * C_D(alpha, C_L_temp)
 
         F_aero_c = np.array([-F_D, 0, -F_L])
 
