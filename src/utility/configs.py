@@ -40,6 +40,10 @@ ki = 2
 
 # Controller
 w_ref_base = 2000 / 60 * 2 * np.pi
+P_mean_init = 6*1e4
+F_tether_mean_init = 1.8*1e5
+og_controller_div_factor = 105
+og_controller_tsr_const = 57.5
 
 
 # Simulation
