@@ -32,11 +32,13 @@ class Kite:
                          "alpha_pc": [],
                          "alpha_pb": [],
                          "alpha": [],
-                         "Fs_aero": [],
-                         "Fs_grav": [],
-                         "Fs_buoy": [],
-                         "Fs_tot": [],
-                         "Fs_thether": []}
+                         "Fs_aero_i": [],
+                         "Fs_grav_i": [],
+                         "Fs_buoy_i": [],
+                         "Fs_tot_i": [],
+                         "Fs_thether_abs": [],
+                         "Fs_aero_s": [],
+                         "Fs_turb_s": []}
 
     # Caluclate kinematics of the kites current position on path
     def kinematics(self, p):
@@ -98,7 +100,7 @@ class Kite:
         F_b_i = rho * self.vol * g * z_i # buoyancy force
 
         # turbine force
-        F_turb_s = np.array([-F_turb, 0, 0])
+        F_turb_s = np.array([-F_turb, 0, 0]) #TODO: currently in negative e1, should change with alpha_pb
         F_turb_i = R_si @ F_turb_s
 
         F_tot_i = F_aero_i + F_mg_i + F_b_i + F_turb_i # thether force unknown here
@@ -109,7 +111,7 @@ class Kite:
 
         F_thether = self.m * (np.dot(e3, r_pp) * pdot**2) - np.dot(e3, F_tot_i)
 
-        return pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether
+        return pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether, F_aero_s, F_turb_s
         
 
     # Stand alone kite dynamics with inserted F_turb
@@ -121,7 +123,7 @@ class Kite:
 
         v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha_pc, alpha_pb, alpha = self.relativeVelocity(p, pdot, r_p, R_si, v_current_i)
 
-        pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether = self.accleration(pdot, r_p, r_pp, e1, e3, R_si, v_rel_abs, alpha, F_turb)
+        pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether, F_aero_s, F_turb_s = self.accleration(pdot, r_p, r_pp, e1, e3, R_si, v_rel_abs, alpha, F_turb)
         self.F_thether = F_thether
 
         # data logging
@@ -135,10 +137,12 @@ class Kite:
         self.data_log["alpha_pc"].append(alpha_pc)
         self.data_log["alpha_pb"].append(alpha_pb)
         self.data_log["alpha"].append(alpha)
-        self.data_log["Fs_aero"].append(F_aero_i)
-        self.data_log["Fs_grav"].append(F_mg_i)
-        self.data_log["Fs_buoy"].append(F_b_i)
-        self.data_log["Fs_tot"].append(F_tot_i)
-        self.data_log["Fs_thether"].append(F_thether)
+        self.data_log["Fs_aero_i"].append(F_aero_i)
+        self.data_log["Fs_grav_i"].append(F_mg_i)
+        self.data_log["Fs_buoy_i"].append(F_b_i)
+        self.data_log["Fs_tot_i"].append(F_tot_i)
+        self.data_log["Fs_thether_abs"].append(F_thether)
+        self.data_log["Fs_aero_s"].append(F_aero_s)
+        self.data_log["Fs_turb_s"].append(F_turb_s)
 
         return [pdot, pdotdot]

@@ -36,6 +36,7 @@ class Turbine:
         self.data_log = {"ts": [],
                          "Fs_turb": [],
                          "Ts_gen_mech": [],
+                         "Ts_gen_el_uncliped": [],
                          "Ts_gen_el":[],
                          "ws_ref": [],
                          "errors": [],
@@ -65,7 +66,7 @@ class Turbine:
         T_gen_mech = self.eff_gear * (T_turb / self.N_gear)
 
         w_error = w_ref - w_gen
-        T_gen_el = self.kp * w_error + self.ki * I
+        T_gen_el_uncliped = self.kp * w_error + self.ki * I
 
         # T_gen_el = max(min(T_gen_el, T_gen_el_limit), -T_gen_el_limit) # TODO: add speed dependant max torque
         # if (w_gen < self.w_gen_max_T):
@@ -75,7 +76,7 @@ class Turbine:
         #     temp_max_T = 965.0754 - 0.3595477*temp_w + 0.00003567839*temp_w**2
         #     T_gen_el = max(min(T_gen_el, temp_max_T), -temp_max_T)
 
-        T_gen_el, w_gen = MaxTorqueSpeed(T_gen_el , w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
+        T_gen_el, w_gen = MaxTorqueSpeed(T_gen_el_uncliped, w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
         #TODO: add limit to turbine to not exceed w_gen
 
         P_gen_out = -T_gen_el * w_gen
@@ -97,6 +98,7 @@ class Turbine:
         self.data_log["ts"].append(t)
         self.data_log["Fs_turb"].append(F_turb)
         self.data_log["Ts_gen_mech"].append(T_gen_mech)
+        self.data_log["Ts_gen_el_uncliped"].append(T_gen_el_uncliped)
         self.data_log["Ts_gen_el"].append(T_gen_el)
         self.data_log["ws_ref"].append(w_ref)
         self.data_log["errors"].append(w_error)

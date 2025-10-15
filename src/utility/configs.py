@@ -28,14 +28,14 @@ r_turb = 0.5
 # A_turb = math.pi *r_turb**2
 J_gen = 5
 # P_gen_max = 2000
-T_gen_max = 500
-T_gen_max_w = 250
+T_gen_max = 700
+T_gen_max_w = 400
 w_gen_max = 4000 / 60 * 2 * np.pi
 w_gen_max_T = 1000 / 60 * 2 * np.pi
 
 eff_gear = 0.99
-kp = 500
-ki = 500
+kp = 20
+ki = 2
 # T_gen_el_limit = 2000
 
 # Controller
