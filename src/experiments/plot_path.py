@@ -43,7 +43,7 @@ for p in ps:
 v_current_i = [2,0,0] # wind in x direction
 
 # Plot path
-fig = plt.figure(figsize=(10,10))
+fig = plt.figure(figsize=(7,7))
 ax = plt.axes(projection = '3d')
 ax.set_box_aspect([1, 2, 1])
 
@@ -122,6 +122,25 @@ plt.tight_layout()
 
 # plt.savefig("3d_view(noforces).png", dpi=300, bbox_inches='tight', pad_inches=0)
 # plt.show()
+
+### 2D path views ###
+fig, ax = plt.subplots(2,1, figsize=(10,7))
+
+ax[0].plot(y,z)
+ax[0].set_title(r"Path in $y-z$ plane")
+ax[0].set_xlabel(r"$y$ [m]")
+ax[0].set_ylabel(r"$z$ [m]")
+ax[0].grid()
+
+ax[1].plot(y,x)
+ax[1].set_title(r"Path in $y-x$ plane")
+ax[1].set_xlabel(r"$y$ [m]")
+ax[1].set_ylabel(r"$x$ [m]")
+ax[1].grid()
+
+fig.tight_layout()
+
+
 
 
 

@@ -75,7 +75,7 @@ print(m,b)
 
 l = 100
 ws_in = np.linspace(0, w_gen_max+200, l)
-torques_in = np.ones(l) * -1000
+torques_in = np.ones(l) * 1000
 
 # l = 10000
 # # ws_in = np.linspace(1280 / 60 * (2*math.pi), 1340 / 60 * (2*math.pi), l)
