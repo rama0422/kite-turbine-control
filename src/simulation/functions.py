@@ -8,12 +8,24 @@ from src.utility.configs import rho, g, R_path, r_path, theta_path, TJpitch_amp,
 ########### KITE #############
 # TODO: make sure these are only calculated once per run
 # path functions
+
 p_sym, R_sym, r_sym, theta_sym = sp.symbols('p_sym R_sym r_sym theta_sym', real=True)
 
+# Circular cylinder
 sub = (R_sym - r_sym)
 x = sub * sp.cos(theta_sym) + r_sym * sp.cos(p_sym) * sp.cos(theta_sym) - r_sym * sp.sin(p_sym) * sp.sin(theta_sym)
 y = 2 * sp.sqrt(sub * r_sym) * sp.sin(p_sym / 2)
 z = sub * sp.sin(theta_sym) + r_sym * sp.cos(p_sym) * sp.sin(theta_sym) + r_sym * sp.sin(p_sym) * sp.cos(theta_sym)
+sub = (R_sym - r_sym)
+x = sub + r_sym * sp.cos(p_sym)
+y = 2 * sp.sqrt(sub * r_sym) * sp.sin(p_sym/2)
+z = r_sym * sp.sin(p_sym)
+
+# Rotate
+R = np.array([[sp.cos(theta_sym), 0, -sp.sin(theta_sym)],
+              [0, 1, 0],
+              [sp.sin(theta_sym), 0, sp.cos(theta_sym)]])
+x,y,z = R @ np.array([x,y,z]).T
 
 # differentiate
 x_p, y_p, z_p = sp.diff(x, p_sym), sp.diff(y, p_sym), sp.diff(z, p_sym)
@@ -31,6 +43,43 @@ def path_p(p):
 
 def path_pp(p):
     return np.array(path_pp_lamb(p, R_path, r_path, theta_path))
+
+
+
+# # Elliptic cylinder
+# p_sym, R_sym, a_sym, b_sym, theta_sym = sp.symbols('p_sym R_sym a_sym b_sym theta_sym', real=True)
+
+# #TODO: not differtiable
+# sub = (R_sym - a_sym)
+# x = sub + a_sym * sp.cos(p_sym)
+# y = sp.sign(sp.sin(p_sym)) * sp.sqrt(R_sym**2 - (sub + a_sym * sp.cos(p_sym))**2 - b_sym**2 * sp.sin(p_sym)**2)
+# z = b_sym * sp.sin(p_sym)
+
+# # Rotate
+# R = np.array([[sp.cos(theta_sym), 0, -sp.sin(theta_sym)],
+#               [0, 1, 0],
+#               [sp.sin(theta_sym), 0, sp.cos(theta_sym)]])
+# x,y,z = R @ np.array([x,y,z]).T
+
+# # differentiate
+# x_p, y_p, z_p = sp.diff(x, p_sym), sp.diff(y, p_sym), sp.diff(z, p_sym)
+# x_pp, y_pp, z_pp = sp.diff(x_p, p_sym), sp.diff(y_p, p_sym), sp.diff(z_p, p_sym)
+
+# path_lamb = sp.lambdify((p_sym, R_sym, a_sym, b_sym, theta_sym), [x, y, z], 'numpy')
+# path_p_lamb = sp.lambdify((p_sym, R_sym, a_sym, b_sym, theta_sym), [x_p, y_p, z_p], 'numpy')
+# path_pp_lamb = sp.lambdify((p_sym, R_sym, a_sym, b_sym, theta_sym), [x_pp, y_pp, z_pp], 'numpy')
+
+# a_path = 1
+# b_path = 2
+# def path(p):
+#     return np.array(path_lamb(p, R_path, a_path, b_path, theta_path))
+
+# def path_p(p):
+#     return np.array(path_p_lamb(p, R_path, a_path, b_path, theta_path))
+
+# def path_pp(p):
+#     return np.array(path_pp_lamb(p, R_path, a_path, b_path, theta_path))
+
 
 #  TJPitchAngle in degrees (tether-joint)
 def TJpitch(p):
