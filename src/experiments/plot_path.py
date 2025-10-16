@@ -47,7 +47,8 @@ fig = plt.figure(figsize=(7,7))
 ax = plt.axes(projection = '3d')
 ax.set_box_aspect([1, 2, 1])
 
-p = 2.15*math.pi
+# p = 2.15*math.pi
+p = 3.4
 r_show = path(p)
 rp_show = path_p(p)
 rpp_show = path_pp(p)

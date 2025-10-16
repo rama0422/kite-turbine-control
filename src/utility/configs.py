@@ -3,13 +3,13 @@ import math
 
 # Enviorment
 rho = 1025
-v_current_i = np.array([1.5,0,0])
+v_current_i = np.array([2,0,0])
 g = 9.81
 
 # Path
 R_path = 60
 r_path = 5 # elevation changes around 10 m durign cycle (from data) d = 5*2 = 10
-theta_path = 15 / 180 * np.pi # 15 deg gives similar elevation as in data
+theta_path = 20 / 180 * np.pi # 15 deg gives similar elevation as in data #TODO:
 
 # Path dependant pitch angle (TJPitchAngle)
 TJpitch_offset = 0
@@ -23,7 +23,7 @@ vol = m/rho # for neutral buoyancy
 
 
 # Turbine
-N_gear = 5 # TODO: does turbine or gen rotate faster
+N_gear = 6.1 # TODO: does turbine or gen rotate faster
 r_turb = 0.5
 # A_turb = math.pi *r_turb**2
 J_gen = 5
@@ -34,15 +34,23 @@ w_gen_max = 4000 / 60 * 2 * np.pi
 w_gen_max_T = 1000 / 60 * 2 * np.pi
 
 eff_gear = 0.99
-kp = 20
-ki = 2
+kp = 30
+ki = 20
 # T_gen_el_limit = 2000
 
-# Controller
+# Controllers
 w_ref_base = 2000 / 60 * 2 * np.pi
-P_mean_init = 6*1e4
-F_tether_mean_init = 1.8*1e5
-og_controller_div_factor = 105
+
+# # og for real data:
+# P_mean_init = 6*1e4
+# F_tether_mean_init = 1.8*1e5
+# og_controller_div_factor = 105
+# og_controller_tsr_const = 57.5
+
+# og for simulation:
+P_mean_init = 7*1e4
+F_tether_mean_init = 3*1e5
+og_controller_div_factor = 250
 og_controller_tsr_const = 57.5
 
 

@@ -2,7 +2,7 @@ import numpy as np
 import math
 
 
-## Controller takes in tether force and produced power and returns a generator speed reference
+## Controller takes in tether force and produced power and returns a generator speed reference in rad/s
 
 class OgController:
     def __init__(self, P_mean_init, F_tether_mean_init, div_factor, TSR_const):
@@ -16,9 +16,9 @@ class OgController:
         self.P_running_mean = self.P_mean_init
         self.F_tether_running_mean = self.F_tether_mean_init
 
-        self.data_log = {"P_running_mean": [],
-                         "F_tether_running_mean": [],
-                         "w_ref": []}
+        self.data_log = {"P_running_mean": [self.P_mean_init],
+                         "F_tether_running_mean": [self.F_tether_mean_init],
+                         "w_ref": [0]}
         
     def getSpeedRef(self, P, F_tether):
         self.updateRunningMeans(P, F_tether)
@@ -26,6 +26,7 @@ class OgController:
         W_ref_P_mean = self.TSR_const * self.P_running_mean**(1/3)
 
         w_ref = (F_tether - self.F_tether_running_mean) / self.div_factor + W_ref_P_mean
+        w_ref = w_ref / 60 * (2*math.pi)
 
         # store data
         self.data_log["P_running_mean"].append(self.P_running_mean)
@@ -35,6 +36,7 @@ class OgController:
         return w_ref
 
     def updateRunningMeans(self, P, F_tether):
-        self.P_running_mean = (self.P_running_mean*0.9999 + P*0.0001) #TODO: calculate real means
-        self.F_tether_running_mean = (self.F_tether_running_mean*0.9999 + F_tether*0.0001)
+        eps = 0.99999
+        self.P_running_mean = (self.P_running_mean*eps + P*(1-eps)) #TODO: calculate real means
+        self.F_tether_running_mean = (self.F_tether_running_mean*eps + F_tether*(1-eps))
 

@@ -4,11 +4,12 @@ import math
 from src.utility.configs import w_ref_base
 
 class FullSystemModel:
-    def __init__(self, kite, turbine):
+    def __init__(self, kite, turbine, controller=None):
         self.kite = kite
         self.turbine = turbine
-        #TODO: add controller
+        self.controller = controller
 
+        # TODO: can be done in the three kite functions instead and then be callabel with self.kite.data_log
         self.data_log = {   "ts": [],
                             "r": [],
                             "r_p": [],
@@ -38,6 +39,13 @@ class FullSystemModel:
         r, r_p, r_pp, e1, e2, e3, R_si = self.kite.kinematics(p)
 
         v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha_pc, alpha_pb, alpha = self.kite.relativeVelocity(p, pdot, r_p, R_si, v_current_i)
+
+        # check if a controller is used and if at least one time step have passed, if so update w_ref using controller
+        if ((self.controller != None) & (len(self.data_log["Fs_thether_abs"]) > 0)):
+            # print("Controller used")
+            P_last = self.turbine.data_log["P_gen_out"][-1]
+            F_tether_last = self.data_log["Fs_thether_abs"][-1]
+            w_ref = self.controller.getSpeedRef(P_last, F_tether_last)
 
         #TODO: turbin should in reality get v_rel from the body frame (frame rotated with alpha_pb)
         [wdot_gen, Idot] = self.turbine.turbineDynamics(t, [w_gen, I], -v_rel_s[0], w_ref)
