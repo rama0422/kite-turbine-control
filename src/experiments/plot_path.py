@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 
 from src.simulation.functions import path, path_p, path_pp, TJpitch
+from src.utility.configs import viviani_type
 
 
 #TODO: change to path dependant on R, r and d like in paper
@@ -118,6 +119,7 @@ ax.set_zlim(0, 100)
 # plt.ion()
 # plt.title("Kite path")
 ax.view_init(elev=25, azim=-55, roll=0)
+ax.set_title("Kite path using the " + viviani_type + " Viviani path.")
 plt.tight_layout()
 
 
