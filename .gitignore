@@ -6,3 +6,4 @@ Kite simulation/kite_and_turbine_dyn_test.py
 venv/
 __pycache__/
 Data/generatorData.txt
+Data/GeneratorTuning.ipynb
