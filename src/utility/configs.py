@@ -8,8 +8,15 @@ g = 9.81
 
 # Path
 R_path = 60
+theta_path = 15 / 180 * np.pi # 15 deg gives similar elevation as in data #TODO:
+viviani_type = "elliptic" # ["cylindrical", "elliptic"]
+
+# Cylindrical
 r_path = 5 # elevation changes around 10 m durign cycle (from data) d = 5*2 = 10
-theta_path = 20 / 180 * np.pi # 15 deg gives similar elevation as in data #TODO:
+
+# Elliptic
+a_path = 3
+b_path = 6
 
 # Path dependant pitch angle (TJPitchAngle)
 TJpitch_offset = 0
