@@ -1,8 +1,8 @@
 Data/KiteData_20231202_f4_flood.csv
 venv/
-Data/GeneratorTuning.ipynb
 Data/bokeh_plot.html
 Kite simulation/kite_and_turbine_dyn_test copy.py
 Kite simulation/kite_and_turbine_dyn_test.py
 venv/
 __pycache__/
+Data/generatorData.txt
