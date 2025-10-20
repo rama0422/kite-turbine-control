@@ -13,14 +13,19 @@ from src.simulation.sensors_model import SensorsModel
 noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0], #TODO
                  "TetherForce": [0, 2*1e-2*200*1e3/3, 0], #TODO
                  "TJPitchAngle": [0, 1*1e-2*90/3, 0], #TODO
-                 "GeneratorSpdRpm": [0, 0.01*1e-2*10000/3, 0] #TODO
+                 "GeneratorSpdRpm": [0, 0.01*1e-2*10000/3, 0], #TODO
+                 "Power": [0, 1*1e-2*100000/3, 0], #TODO
+                 "Torque": [0, 2*1e-2*1000/3, 0] #TODO
                  } 
 
 
 gt_measurments = {"Elevation": [4.5*np.sin(p)+13 for p in np.linspace(0,8*math.pi,1000)],
                   "TetherForce": [1e5*np.sin(p+math.pi/3)+1.8e5 for p in np.linspace(0,8*math.pi,1000)],
                   "TJPitchAngle": [2*np.sin(p+math.pi/3) * np.cos(p/2) +1 for p in np.linspace(0,8*math.pi,1000)],
-                  "GeneratorSpdRpm": [200*np.sin(p+math.pi/3) + 2200 for p in np.linspace(0,8*math.pi,1000)]}
+                  "GeneratorSpdRpm": [200*np.sin(p+math.pi/3) + 2200 for p in np.linspace(0,8*math.pi,1000)],
+                  "Power": [1e4*np.sin(p+math.pi/3) + 5e4 for p in np.linspace(0,8*math.pi,1000)],
+                  "Torque": [200*np.sin(p+math.pi/3) + 2200 for p in np.linspace(0,8*math.pi,1000)]
+                  }
 
 sensors_model = SensorsModel(noise_configs)
 
@@ -28,12 +33,14 @@ for i in range(len(gt_measurments["Elevation"])):
     measurments = {"Elevation": gt_measurments["Elevation"][i],
                    "TetherForce": gt_measurments["TetherForce"][i],
                    "TJPitchAngle": gt_measurments["TJPitchAngle"][i],
-                   "GeneratorSpdRpm": gt_measurments["GeneratorSpdRpm"][i]}
+                   "GeneratorSpdRpm": gt_measurments["GeneratorSpdRpm"][i],
+                   "Power": gt_measurments["Power"][i],
+                   "Torque": gt_measurments["Torque"][i]}
 
     sensors_model.addNoise(measurments)
 
 # plot 
-plot_feature = "GeneratorSpdRpm"
+plot_feature = "Power"
 fig, ax = plt.subplots(1,1, figsize=(12,6))
 
 ax.plot(sensors_model.noise_measurments[plot_feature])
