@@ -142,8 +142,16 @@ def C_D(alpha, C_L):
     c = 0.05 + C_L**2 / (math.pi * 0.9 * 3) # see sources
     return c
 
-def R_sc(a):
-    a = -a
+# Path to current frame
+def R_pc(a_pc):
+    a = -a_pc
+    return (np.array([[math.cos(a),  0, math.sin(a)],
+                      [0,            1, 0],
+                      [-math.sin(a), 0, math.cos(a)]]))
+
+# Path to body frmae
+def R_pb(a_pb):
+    a = -a_pb
     return (np.array([[math.cos(a),  0, math.sin(a)],
                       [0,            1, 0],
                       [-math.sin(a), 0, math.cos(a)]]))
