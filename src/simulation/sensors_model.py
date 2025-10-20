@@ -7,7 +7,9 @@ class SensorsModel:
         self.noise_config = noise_configs
 
         self.noise_measurments = {"Elevation": [], 
-                                  "TetherForce": []}
+                                  "TetherForce": [],
+                                  "TJPitchAngle": [],
+                                  "GeneratorSpdRpm": []}
 
     # Add gausian noise and bias to simulation measurments
     def addNoise(self, gt_measurments):

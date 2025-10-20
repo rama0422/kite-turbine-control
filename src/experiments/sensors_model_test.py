@@ -10,30 +10,40 @@ from src.simulation.sensors_model import SensorsModel
 #                  "TetherForce": [0, 0.1*1e-2*200*1e3/3, 0] #https://www.vetek.com/en/dynamics/WebFiles/document/056487f4-2a65-43b2-8ba2-a270cccbc67f/Datasheet_K2145_V1.pdf
 #                  }
 
-noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0],
-                 "TetherForce": [0, 5*1e-2*200*1e3/3, 0]}
+noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0], #TODO
+                 "TetherForce": [0, 2*1e-2*200*1e3/3, 0], #TODO
+                 "TJPitchAngle": [0, 1*1e-2*90/3, 0], #TODO
+                 "GeneratorSpdRpm": [0, 0.01*1e-2*10000/3, 0] #TODO
+                 } 
 
 
 gt_measurments = {"Elevation": [4.5*np.sin(p)+13 for p in np.linspace(0,8*math.pi,1000)],
-                  "TetherForce": [1e5*np.sin(p+math.pi/3)+1.8e5 for p in np.linspace(0,8*math.pi,1000)]}
+                  "TetherForce": [1e5*np.sin(p+math.pi/3)+1.8e5 for p in np.linspace(0,8*math.pi,1000)],
+                  "TJPitchAngle": [2*np.sin(p+math.pi/3) * np.cos(p/2) +1 for p in np.linspace(0,8*math.pi,1000)],
+                  "GeneratorSpdRpm": [200*np.sin(p+math.pi/3) + 2200 for p in np.linspace(0,8*math.pi,1000)]}
 
 sensors_model = SensorsModel(noise_configs)
 
 for i in range(len(gt_measurments["Elevation"])):
     measurments = {"Elevation": gt_measurments["Elevation"][i],
-                   "TetherForce": gt_measurments["TetherForce"][i]}
+                   "TetherForce": gt_measurments["TetherForce"][i],
+                   "TJPitchAngle": gt_measurments["TJPitchAngle"][i],
+                   "GeneratorSpdRpm": gt_measurments["GeneratorSpdRpm"][i]}
 
     sensors_model.addNoise(measurments)
 
-fig, ax = plt.subplots(1,2, figsize=(12,6))
+# plot 
+plot_feature = "GeneratorSpdRpm"
+fig, ax = plt.subplots(1,1, figsize=(12,6))
 
-ax[0].plot(sensors_model.noise_measurments["Elevation"])
-ax[0].plot(gt_measurments["Elevation"], linewidth = 1)
-ax[0].grid()
+ax.plot(sensors_model.noise_measurments[plot_feature])
+ax.plot(gt_measurments[plot_feature], linewidth = 1)
+ax.set_title(plot_feature)
+ax.grid()
 
-ax[1].plot(sensors_model.noise_measurments["TetherForce"])
-ax[1].plot(gt_measurments["TetherForce"], linewidth = 1)
-ax[1].grid()
+# ax[1].plot(sensors_model.noise_measurments["TetherForce"])
+# ax[1].plot(gt_measurments["TetherForce"], linewidth = 1)
+# ax[1].grid()
 
 plt.tight_layout()
 plt.show()
