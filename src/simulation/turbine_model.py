@@ -66,7 +66,7 @@ class Turbine:
         T_gen_mech = self.eff_gear * (T_turb / self.N_gear)
 
         w_error = w_ref - w_gen
-        T_gen_el_uncliped = self.kp * w_error + self.ki * I
+        T_gen_el_uncliped = self.kp * w_error + self.ki * I # TODO: add some sort of delay/inertia to T_gen to no jump to much with discretet w_ref
 
         # T_gen_el = max(min(T_gen_el, T_gen_el_limit), -T_gen_el_limit) # TODO: add speed dependant max torque
         # if (w_gen < self.w_gen_max_T):
@@ -95,6 +95,8 @@ class Turbine:
         wdot_gen = (T_gen_mech + T_gen_el) / self.J_gen
 
         # data logging
+        # if ((t - self.t_last_log) >= self.dt_log):
+        #     self.t_last_log = t
         self.data_log["ts"].append(t)
         self.data_log["Fs_turb"].append(F_turb)
         self.data_log["Ts_gen_mech"].append(T_gen_mech)

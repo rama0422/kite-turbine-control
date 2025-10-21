@@ -2,18 +2,22 @@ import numpy as np
 import math
 import scipy
 
-from src.utility.configs import w_ref_base, g
+# from src.utility.configs import w_ref_base, g
 from src.simulation.functions import R_pb, R_pc
 
 class FullSystemModel:
-    def __init__(self, kite, turbine, controller=None):
+    def __init__(self, kite, turbine, w_ref_base, dt_controller, controller=None):
         self.kite = kite
         self.turbine = turbine
         self.controller = controller
 
+        self.dt_controller = dt_controller
+
         # variables
         self.R_pi_last = np.identity(3)
         self.t_last = -0.02
+        self.t_controller_last = -1
+        self.w_ref = w_ref_base
 
         # TODO: can be done in the three kite functions instead and then be callabel with self.kite.data_log
         self.data_log = {   "ts": [],
@@ -40,7 +44,7 @@ class FullSystemModel:
 
 
 
-    def systemDynamics(self, t, x, v_current_i, w_ref = w_ref_base):
+    def systemDynamics(self, t, x, v_current_i):
         p = x[0]
         pdot = x[1]
         w_gen = x[2]
@@ -51,14 +55,16 @@ class FullSystemModel:
         v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha_pc, alpha_pb, alpha = self.kite.relativeVelocity(p, pdot, r_p, R_pi, v_current_i)
 
         # check if a controller is used and if at least one time step have passed, if so update w_ref using controller
-        if ((self.controller != None) & (len(self.data_log["Fs_thether_abs"]) > 0)):
+        if ((self.controller != None) & (len(self.data_log["Fs_thether_abs"]) > 0) & (t - self.t_controller_last >= self.dt_controller)):
             # print("Controller used")
-            P_last = self.turbine.data_log["P_gen_out"][-1]
+            self.t_controller_last = t
+
+            P_last = self.turbine.data_log["P_gen_out"][-1] # TODO: realistic that is checks last logged value? or do we want real last value
             F_tether_last = self.data_log["Fs_thether_abs"][-1]
-            w_ref = self.controller.getSpeedRef(P_last, F_tether_last)
+            self.w_ref = self.controller.getSpeedRef(t, P_last, F_tether_last)
 
         #TODO: turbin should in reality get v_rel from the body frame (frame rotated with alpha_pb)
-        [wdot_gen, Idot] = self.turbine.turbineDynamics(t, [w_gen, I], -v_rel_s[0], w_ref)
+        [wdot_gen, Idot] = self.turbine.turbineDynamics(t, [w_gen, I], -v_rel_s[0], self.w_ref)
         # F_turb = self.turbine.F_turb
 
         pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether, F_aero_p, F_turb_p = self.kite.accleration(pdot, r_p, r_pp, e1, e3, R_pi, v_rel_c[0], alpha, self.turbine.F_turb)
@@ -66,7 +72,7 @@ class FullSystemModel:
 
         # IMU measurements
         # acceleations
-        acc_i = (r_pp * pdot**2 + r_p * pdotdot) # not added since we have zero bouyance + gravity,  + np.array([0,0,g])
+        acc_i = (r_pp * pdot**2 + r_p * pdotdot) # g and b not added since we have zero bouyance + gravity,  + np.array([0,0,g])
         acc_p = R_pi.T @ acc_i
         acc_b = R_pb(alpha_pb) @ acc_p
 
@@ -84,6 +90,8 @@ class FullSystemModel:
 
 
         # data logging
+        # if ((t - self.t_last_log) >= self.dt_log):
+        #     self.t_last_log = t
         self.data_log["ts"].append(t)
         self.data_log["r"].append(r)
         self.data_log["r_p"].append(r_p)

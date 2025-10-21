@@ -16,11 +16,12 @@ class OgController:
         self.P_running_mean = self.P_mean_init
         self.F_tether_running_mean = self.F_tether_mean_init
 
-        self.data_log = {"P_running_mean": [self.P_mean_init],
+        self.data_log = {"ts": [0],
+                         "P_running_mean": [self.P_mean_init],
                          "F_tether_running_mean": [self.F_tether_mean_init],
                          "w_ref": [0]}
         
-    def getSpeedRef(self, P, F_tether):
+    def getSpeedRef(self, t, P, F_tether):
         self.updateRunningMeans(P, F_tether)
 
         W_ref_P_mean = self.TSR_const * self.P_running_mean**(1/3)
@@ -29,6 +30,7 @@ class OgController:
         w_ref = w_ref / 60 * (2*math.pi)
 
         # store data
+        self.data_log["ts"].append(t)
         self.data_log["P_running_mean"].append(self.P_running_mean)
         self.data_log["F_tether_running_mean"].append(self.F_tether_running_mean)
         self.data_log["w_ref"].append(w_ref)

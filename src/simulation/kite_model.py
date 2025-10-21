@@ -126,6 +126,8 @@ class Kite:
         self.F_thether = F_thether
 
         # data logging
+        # if ((t - self.t_last_log) >= self.dt_log):
+        #     self.t_last_log = t
         self.data_log["ts"].append(t)
         self.data_log["r"].append(r)
         self.data_log["r_p"].append(r_p)

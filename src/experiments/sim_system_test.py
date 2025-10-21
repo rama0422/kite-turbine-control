@@ -16,7 +16,7 @@ kite = Kite(S, m, vol)
 trubine = Turbine(r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki)
 ogController = OgController(P_mean_init, F_tether_mean_init, og_controller_div_factor, og_controller_tsr_const)
 # kiteSystem = FullSystemModel(kite, trubine) # for running w/o controller and use predetermined w_ref
-kiteSystem = FullSystemModel(kite, trubine, ogController)
+kiteSystem = FullSystemModel(kite, trubine, w_ref_base, dt_controller, ogController)
 
 # simulation params
 v_current_i = np.array([2,0,0])
@@ -27,12 +27,18 @@ I0 = 0
 x0 = [p0, pdot0, w0_gen, I0]
 
 # systemDynamics(self, t, x, v_current_i, w_ref = w_ref_base)
-sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, max_step = dt)
+sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, max_step = dt, t_eval=np.arange(0, t_end, dt))
 
 print(sol)
 
 # Kite
 ts = np.array(kiteSystem.data_log["ts"])
+print(len(ts))
+print(len(sol.t))
+# print(sol.t[0:30])
+# print(ts[0:30])
+
+print(len(ogController.data_log["ts"]))
 rs = np.array(kiteSystem.data_log["r"])
 rs_p = np.array(kiteSystem.data_log["r_p"])
 rs_pp= np.array(kiteSystem.data_log["r_pp"])
@@ -234,14 +240,16 @@ plt.tight_layout(pad=1.0)
 # Og Controller
 fig, ax = plt.subplots(3,1, figsize=(8,8))
 
-ax[0].plot(ts, Ps_running_mean)
+ts_controller = np.array(ogController.data_log["ts"])
+print(ts_controller[0:100])
+ax[0].plot(ts_controller, Ps_running_mean)
 ax[0].plot(ts, P_gen_out)
 ax[0].legend([r"$P_{running mean}$", r"$P_{generator}$"])
 ax[0].set_title(r"Mean power used in og controller")
 ax[0].set_ylim([-50e3, 170e3])
 ax[0].grid()
 
-ax[1].plot(ts, Fs_tether_running_mean)
+ax[1].plot(ts_controller, Fs_tether_running_mean)
 ax[1].plot(ts, Fs_thether)
 ax[1].legend([r"$F_{tether, running mean}$", r"$F_{tether}$"])
 ax[1].set_title(r"Tether forces used in og controller")

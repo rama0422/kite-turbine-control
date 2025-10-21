@@ -64,3 +64,6 @@ og_controller_tsr_const = 57.5
 # Simulation
 dt = 0.02
 t_end = 40
+dt_log = 0.01
+dt_measurement_log = 0.02
+dt_controller = 0.02
