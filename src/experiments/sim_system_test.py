@@ -52,6 +52,7 @@ Fs_turb_p = np.array(kiteSystem.data_log["Fs_turb_p"])
 acc_i = np.array(kiteSystem.data_log["acc_i"])
 acc_p = np.array(kiteSystem.data_log["acc_p"])
 acc_b = np.array(kiteSystem.data_log["acc_b"])
+omega_b = np.array(kiteSystem.data_log["omega_b"])
 
 # Turbine
 # ts1 = np.array(kiteSystem.turbine.data_log["ts"])
@@ -166,6 +167,14 @@ ax[1,1].legend([r"$\hat{e}_1$", r"$\hat{e}_2$", r"$\hat{e}_3$"])
 ax[1,1].set_title(r"Acc. in path frame")
 ax[1,1].set_ylim([-15, 15])
 ax[1,1].grid()
+
+ax[2,1].plot(ts, omega_b[:, 0] * 180 / math.pi)
+ax[2,1].plot(ts, omega_b[:, 1] * 180 / math.pi)
+ax[2,1].plot(ts, omega_b[:, 2] * 180 / math.pi)
+ax[2,1].legend([r"$\hat{e}_1$", r"$\hat{e}_2$", r"$\hat{e}_3$"])
+ax[2,1].set_title(r"Angular velocity in body frame")
+ax[2,1].set_ylim([-100,100])
+ax[2,1].grid()
 
 plt.tight_layout(pad=1.0)
 

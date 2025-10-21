@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import scipy
 
 from src.utility.configs import w_ref_base, g
 from src.simulation.functions import R_pb, R_pc
@@ -9,6 +10,10 @@ class FullSystemModel:
         self.kite = kite
         self.turbine = turbine
         self.controller = controller
+
+        # variables
+        self.R_pi_last = np.identity(3)
+        self.t_last = -0.02
 
         # TODO: can be done in the three kite functions instead and then be callabel with self.kite.data_log
         self.data_log = {   "ts": [],
@@ -30,7 +35,8 @@ class FullSystemModel:
                             "Fs_turb_p": [],
                             "acc_i": [],
                             "acc_p": [],
-                            "acc_b": []}
+                            "acc_b": [],
+                            "omega_b": []}
 
 
 
@@ -65,7 +71,17 @@ class FullSystemModel:
         acc_b = R_pb(alpha_pb) @ acc_p
 
         # angular velocities
-        # diffrence between angles obtained from r at time t and t-1
+        dR_pi = self.R_pi_last.T @ R_pi
+        # skewed = scipy.linalg.logm(dR_pi)
+        skewed = self.so3MLog(dR_pi)
+        dt = t - self.t_last
+        omega_p = np.array([skewed[2,1], skewed[0,2], skewed[1,0]]) / (dt)
+
+        omega_b = R_pb(alpha_pb) @ omega_p
+
+        self.R_pi_last = R_pi
+        self.t_last = t
+
 
         # data logging
         self.data_log["ts"].append(t)
@@ -90,7 +106,17 @@ class FullSystemModel:
         self.data_log["acc_i"].append(acc_i)
         self.data_log["acc_p"].append(acc_p)
         self.data_log["acc_b"].append(acc_b)
+        self.data_log["omega_b"].append(omega_b)
 
         #turbine data log is found in turbine object
 
         return [pdot, pdotdot, wdot_gen, Idot]
+    
+    # faster then scipy.linalg.logm
+    def so3MLog(self, R):
+        c = (np.trace(R) - 1.0) / 2.0
+        c = np.clip(c, -1.0, 1.0)
+        theta = np.arccos(c)
+        if theta < 1e-8:
+            return 0.5 * (R - R.T)
+        return theta / (2.0 * np.sin(theta)) * (R - R.T)
