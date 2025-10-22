@@ -6,18 +6,21 @@ import scipy
 from src.simulation.functions import R_pb, R_pc
 
 class FullSystemModel:
-    def __init__(self, kite, turbine, w_ref_base, dt_controller, controller=None):
+    def __init__(self, kite, turbine, w_ref_base, dt_controller, dt_measurement_log, controller=None, sensors=None):
         self.kite = kite
         self.turbine = turbine
         self.controller = controller
+        self.sensors = sensors
 
         self.dt_controller = dt_controller
+        self.dt_measurement_log = dt_measurement_log
 
         # variables
         self.R_pi_last = np.identity(3)
         self.t_last = -0.02
         self.t_controller_last = -1
         self.w_ref = w_ref_base
+        self.t_measurement_last = -1
 
         # TODO: can be done in the three kite functions instead and then be callabel with self.kite.data_log
         self.data_log = {   "ts": [],
@@ -88,6 +91,17 @@ class FullSystemModel:
         self.R_pi_last = R_pi
         self.t_last = t
 
+        # sensor values and logging
+        if ((self.sensors != None) & (t - self.t_measurement_last >= self.dt_measurement_log)):
+            # change values to obtaine data similar to the real data
+            measurments = { "Elevation": r[2], # z
+                            "TetherForce": self.F_thether,
+                            "TJPitchAngle": alpha_pb * 180 / math.pi,
+                            "GeneratorSpdRpm": w_gen * 60 / (2*math.pi),
+                            "Power": self.turbine.P_gen_out / 1e3,
+                            "Torque": -self.turbine.T_gen_el}
+
+            self.sensors.addNoise(measurments, t)
 
         # data logging
         # if ((t - self.t_last_log) >= self.dt_log):

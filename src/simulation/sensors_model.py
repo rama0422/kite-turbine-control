@@ -6,16 +6,19 @@ class SensorsModel:
     def __init__(self, noise_configs):
         self.noise_config = noise_configs
 
-        self.noise_measurments = {"Elevation": [], 
+        self.noise_measurments = {"ts": [],
+                                  "Elevation": [], 
                                   "TetherForce": [],
                                   "TJPitchAngle": [],
                                   "GeneratorSpdRpm": [],
                                   "Power": [],
                                   "Torque": []}
 
+
     # Add gausian noise and bias to simulation measurments
-    def addNoise(self, gt_measurments):
+    def addNoise(self, gt_measurments, t=0):
         noised_dict = {}
+        self.noise_measurments["ts"].append(t)
         for key, value in gt_measurments.items():
             mean = self.noise_config[key][0]
             std = self.noise_config[key][1]

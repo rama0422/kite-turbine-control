@@ -25,6 +25,7 @@ class Turbine:
         # variables
         self.F_turb = 0
         self.P_gen_out = 0
+        self.T_gen_el = 0
 
         # fit T-w curve
         ws = np.array([w_gen_max_T, w_gen_max])
@@ -89,6 +90,7 @@ class Turbine:
         # store variables
         self.F_turb = F_turb
         self.P_gen_out = P_gen_out
+        self.T_gen_el = T_gen_el
 
         # calculate derivatives
         Idot = w_error

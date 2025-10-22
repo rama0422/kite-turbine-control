@@ -7,6 +7,7 @@ from src.simulation.kite_model import Kite
 from src.simulation.turbine_model import Turbine
 from src.controllers.og_controller import OgController
 from src.simulation.full_system_model import FullSystemModel
+from src.simulation.sensors_model import SensorsModel
 # from src.utility.configs import rho, g, S, m, vol, r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki, P_mean_init, F_tether_mean_init, og_controller_div_factor, og_controller_tsr_const, dt, t_end
 from src.utility.configs import *
 from src.simulation.functions import path
@@ -15,8 +16,9 @@ from src.simulation.functions import path
 kite = Kite(S, m, vol)
 trubine = Turbine(r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki)
 ogController = OgController(P_mean_init, F_tether_mean_init, og_controller_div_factor, og_controller_tsr_const)
+sensors = SensorsModel(noise_configs)
 # kiteSystem = FullSystemModel(kite, trubine) # for running w/o controller and use predetermined w_ref
-kiteSystem = FullSystemModel(kite, trubine, w_ref_base, dt_controller, ogController)
+kiteSystem = FullSystemModel(kite, trubine, w_ref_base, dt_controller, dt_measurement_log, ogController, sensors)
 
 # simulation params
 v_current_i = np.array([2,0,0])
@@ -26,6 +28,8 @@ w0_gen = 2100 / 60 * 2 * math.pi
 I0 = 0
 x0 = [p0, pdot0, w0_gen, I0]
 
+plot_meas = True
+
 # systemDynamics(self, t, x, v_current_i, w_ref = w_ref_base)
 sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, max_step = dt, t_eval=np.arange(0, t_end, dt))
 
@@ -33,12 +37,12 @@ print(sol)
 
 # Kite
 ts = np.array(kiteSystem.data_log["ts"])
-print(len(ts))
-print(len(sol.t))
+# print(len(ts))
+# print(len(sol.t))
 # print(sol.t[0:30])
 # print(ts[0:30])
 
-print(len(ogController.data_log["ts"]))
+# print(len(ogController.data_log["ts"]))
 rs = np.array(kiteSystem.data_log["r"])
 rs_p = np.array(kiteSystem.data_log["r_p"])
 rs_pp= np.array(kiteSystem.data_log["r_pp"])
@@ -76,6 +80,16 @@ P_gen_out = np.array(kiteSystem.turbine.data_log["P_gen_out"])
 Ps_running_mean = np.array(ogController.data_log["P_running_mean"])
 Fs_tether_running_mean = np.array(ogController.data_log["F_tether_running_mean"])
 
+# Sensor measurments
+ts_sensor = np.array(sensors.noise_measurments["ts"])
+elevation_meas = np.array(sensors.noise_measurments["Elevation"])
+tether_force_meas = np.array(sensors.noise_measurments["TetherForce"])
+tj_pitch_angle_meas = np.array(sensors.noise_measurments["TJPitchAngle"])
+gen_spd_rpm_meas = np.array(sensors.noise_measurments["GeneratorSpdRpm"])
+power_meas = np.array(sensors.noise_measurments["Power"])
+torque_meas = np.array(sensors.noise_measurments["Torque"])
+
+
 # print(ts1.shape == ts.shape)
 
 # Get linear positions
@@ -92,11 +106,13 @@ ax[1,0].plot(sol.t, sol.y[1])
 ax[1,0].set_title(r"$\dot{p}(t)$")
 ax[1,0].grid()
 
-ax[2,0].plot(ts, xs)
-ax[2,0].plot(ts, ys)
-ax[2,0].plot(ts, zs)
+ax[2,0].plot(ts, xs, label=r"$x$")
+ax[2,0].plot(ts, ys, label=r"$y$")
+ax[2,0].plot(ts_sensor, elevation_meas, label=r"z meas.") if plot_meas else None
+ax[2,0].plot(ts, zs, label=r"$z$")
 ax[2,0].set_title(r"Linear positions")
-ax[2,0].legend([r"$x$", r"$y$", r"$z$"])
+# ax[2,0].legend([r"$x$", r"$y$", r"$z$"])
+ax[2,0].legend()
 ax[2,0].set_xlabel("Time [s]")
 ax[2,0].grid()
 
@@ -110,11 +126,13 @@ ax[0,1].legend([r"$|v_{kite,i}|$", r"$|v_{rel,i}|$", r"$|v_{current,i}|$"])
 ax[0,1].set_ylim([0, 15])
 ax[0,1].grid()
 
-ax[1,1].plot(ts, alphas_pc * 180 / math.pi)
-ax[1,1].plot(ts, alphas_pb * 180 / math.pi)
-ax[1,1].plot(ts, alphas * 180 / math.pi)
+ax[1,1].plot(ts, alphas_pc * 180 / math.pi, label=r"$\alpha_{pc}$")
+ax[1,1].plot(ts_sensor, tj_pitch_angle_meas, label=r"$\alpha_{pb, meas.}$") if plot_meas else None
+ax[1,1].plot(ts, alphas_pb * 180 / math.pi, label=r"$\alpha_{pb}$")
+ax[1,1].plot(ts, alphas * 180 / math.pi, label=r"$\alpha$ (AoA)")
 ax[1,1].set_title("Alphas")
-ax[1,1].legend([r"$\alpha_{pc}$", r"$\alpha_{pb}$", r"$\alpha$ (AoA)"])
+# ax[1,1].legend([r"$\alpha_{pc}$", r"$\alpha_{pb}$", r"$\alpha$ (AoA)"])
+ax[1,1].legend()
 ax[1,1].set_ylabel("Angle [deg]")
 ax[1,1].set_xlabel("Time [s]")
 ax[1,1].set_ylim([-5, 30])
@@ -125,14 +143,16 @@ plt.tight_layout(pad=1.0)
 
 ###### plot forces ######
 fig, ax = plt.subplots(3,2, figsize=(15,9))
-ax[0,0].plot(ts, np.linalg.norm(Fs_aero_i, axis=1))
-ax[0,0].plot(ts, np.linalg.norm(Fs_buoy_i, axis=1))
-ax[0,0].plot(ts, np.linalg.norm(Fs_grav_i, axis=1))
-ax[0,0].plot(ts, Fs_turb)
-ax[0,0].plot(ts, np.linalg.norm(Fs_tot_i, axis=1))
-ax[0,0].plot(ts, Fs_thether)
+ax[0,0].plot(ts, np.linalg.norm(Fs_aero_i, axis=1), label=r"$F_{aero}$")
+ax[0,0].plot(ts, np.linalg.norm(Fs_buoy_i, axis=1), label=r"$F_{buoy}$")
+ax[0,0].plot(ts, np.linalg.norm(Fs_grav_i, axis=1), label=r"$F_{grav}$")
+ax[0,0].plot(ts, Fs_turb, label=r"$F_{turb}$")
+ax[0,0].plot(ts, np.linalg.norm(Fs_tot_i, axis=1), label=r"$F_{tot}$")
+ax[0,0].plot(ts_sensor, tether_force_meas, label=r"$F_{thether, meas.}$") if plot_meas else None
+ax[0,0].plot(ts, Fs_thether, label=r"$F_{thether}$")
 ax[0,0].set_title(r"Absolute forces over time")
-ax[0,0].legend([r"$F_{aero}$", r"$F_{buoy}$", r"$F_{grav}$", r"$F_{turb}$", r"$F_{tot}$", r"$F_{thether}$"])
+# ax[0,0].legend([r"$F_{aero}$", r"$F_{buoy}$", r"$F_{grav}$", r"$F_{turb}$", r"$F_{tot}$", r"$F_{thether}$"])
+ax[0,0].legend()
 ax[0,0].set_xlabel("Time [s]")
 ax[0,0].set_ylim([-1e3, 6e5])
 ax[0,0].grid()
@@ -188,11 +208,13 @@ plt.tight_layout(pad=1.0)
 ##### plot generator stats ####
 fig, ax = plt.subplots(4,2, figsize=(15,9))
 
-ax[0,0].plot(sol.t, sol.y[2] * 60 / (2*math.pi))
+ax[0,0].plot(ts_sensor, gen_spd_rpm_meas, label=r"$\omega_{gen,meas.}$") if plot_meas else None
+ax[0,0].plot(sol.t, sol.y[2] * 60 / (2*math.pi), label=r"$\omega_{gen}$")
 # ax[0].plot(sol.t, np.ones(len(sol.t)) * w_ref)
-ax[0,0].plot(ts, ws_ref * 60 / (2*math.pi))
+ax[0,0].plot(ts, ws_ref * 60 / (2*math.pi), label=r"$\omega_{gen,ref}$")
 ax[0,0].set_title(r"Rotor speed $\omega_{gen}$")
-ax[0,0].legend([r"$\omega_{gen}$", r"$\omega_{gen,ref}$"])
+# ax[0,0].legend([r"$\omega_{gen}$", r"$\omega_{gen,ref}$"])
+ax[0,0].legend()
 ax[0,0].set_ylim([1e3, 4e3])
 ax[0,0].grid()
 
@@ -203,12 +225,14 @@ ax[1,0].legend([r"$I$", r"$\omega_{gen,ref} - \omega_{gen}$"])
 ax[1,0].set_ylim([-50, 50])
 ax[1,0].grid()
 
-ax[2,0].plot(ts, -Ts_gen_el)
-ax[2,0].plot(ts, -Ts_gen_el_uncliped)
-ax[2,0].plot(ts, Ts_gen_mech)
+ax[2,0].plot(ts_sensor, torque_meas, label=r"$T_{gen,el,meas.}$") if plot_meas else None
+ax[2,0].plot(ts, -Ts_gen_el, label=r"$T_{gen,el}$")
+ax[2,0].plot(ts, -Ts_gen_el_uncliped, label=r"$T_{gen,el(uncliped)}$")
+ax[2,0].plot(ts, Ts_gen_mech, label=r"$T_{gen,mech}$")
 ax[2,0].axhline(y=0, color='k', linestyle='--', linewidth=0.7)
 ax[2,0].set_title(r"Torques")
-ax[2,0].legend([r"$T_{gen,el}$", r"$T_{gen,el(uncliped)}$", r"$T_{gen,mech}$"])
+# ax[2,0].legend([r"$T_{gen,el}$", r"$T_{gen,el(uncliped)}$", r"$T_{gen,mech}$"])
+ax[2,0].legend()
 ax[2,0].set_ylim([-1e3, 1e3])
 ax[2,0].grid()
 
@@ -229,9 +253,11 @@ ax[1,1].legend([r"$v_{rel}$", r"$\omega_{gen,ref}(moved)$"])
 ax[1,1].set_ylim([-50, 200])
 ax[1,1].grid()
 
-ax[2,1].plot(ts, P_gen_out/1000)
+ax[2,1].plot(ts_sensor, power_meas, label=r"measured") if plot_meas else None
+ax[2,1].plot(ts, P_gen_out/1000, label=r"simulated")
 ax[2,1].axhline(y=0, color='k', linestyle='--', linewidth=0.7)
 ax[2,1].set_title(r"Generator power [kW]")
+ax[2,1].legend()
 ax[2,1].set_ylim([-50, 170])
 ax[2,1].grid()
 
@@ -241,7 +267,7 @@ plt.tight_layout(pad=1.0)
 fig, ax = plt.subplots(3,1, figsize=(8,8))
 
 ts_controller = np.array(ogController.data_log["ts"])
-print(ts_controller[0:100])
+# print(ts_controller[0:100])
 ax[0].plot(ts_controller, Ps_running_mean)
 ax[0].plot(ts, P_gen_out)
 ax[0].legend([r"$P_{running mean}$", r"$P_{generator}$"])

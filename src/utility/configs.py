@@ -60,10 +60,18 @@ F_tether_mean_init = 3*1e5
 og_controller_div_factor = 250
 og_controller_tsr_const = 57.5
 
+# sensors
+noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0], #TODO
+                 "TetherForce": [0, 2*1e-2*200*1e3/3, 0], #TODO
+                 "TJPitchAngle": [0, 1*1e-2*90/3, 0], #TODO
+                 "GeneratorSpdRpm": [0, 0.01*1e-2*10000/3, 0], #TODO
+                 "Power": [0, 1*1e-2*100000/1e3/3, 0], #TODO
+                 "Torque": [0, 2*1e-2*1000/3, 0] #TODO
+                 }
 
 # Simulation
 dt = 0.02
 t_end = 40
-dt_log = 0.01
+dt_sim_log = 0.01
 dt_measurement_log = 0.02
 dt_controller = 0.02
