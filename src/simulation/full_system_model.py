@@ -62,8 +62,10 @@ class FullSystemModel:
             # print("Controller used")
             self.t_controller_last = t
 
-            P_last = self.turbine.data_log["P_gen_out"][-1] # TODO: realistic that is checks last logged value? or do we want real last value
-            F_tether_last = self.data_log["Fs_thether_abs"][-1]
+            # P_last = self.turbine.data_log["P_gen_out"][-1] # TODO: realistic that is checks last logged value? or do we want real last value
+            # F_tether_last = self.data_log["Fs_thether_abs"][-1]
+            P_last = self.sensors.noise_measurments["Power"][-1] * 1e3 # TODO: realistic that is checks last logged measurment value? or do we want real last value
+            F_tether_last = self.sensors.noise_measurments["TetherForce"][-1]
             self.w_ref = self.controller.getSpeedRef(t, P_last, F_tether_last)
 
         #TODO: turbin should in reality get v_rel from the body frame (frame rotated with alpha_pb)
@@ -72,6 +74,7 @@ class FullSystemModel:
 
         pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether, F_aero_p, F_turb_p = self.kite.accleration(pdot, r_p, r_pp, e1, e3, R_pi, v_rel_c[0], alpha, self.turbine.F_turb)
         self.F_thether = F_thether
+
 
         # IMU measurements
         # acceleations

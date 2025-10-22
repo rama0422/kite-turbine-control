@@ -17,6 +17,8 @@ class OgController:
         self.F_tether_running_mean = self.F_tether_mean_init
 
         self.data_log = {"ts": [0],
+                         "P": [0],
+                         "F_tether": [0],
                          "P_running_mean": [self.P_mean_init],
                          "F_tether_running_mean": [self.F_tether_mean_init],
                          "w_ref": [0]}
@@ -31,6 +33,8 @@ class OgController:
 
         # store data
         self.data_log["ts"].append(t)
+        self.data_log["P"].append(P)
+        self.data_log["F_tether"].append(F_tether)
         self.data_log["P_running_mean"].append(self.P_running_mean)
         self.data_log["F_tether_running_mean"].append(self.F_tether_running_mean)
         self.data_log["w_ref"].append(w_ref)

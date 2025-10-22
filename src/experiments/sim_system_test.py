@@ -77,6 +77,9 @@ P_gen_out = np.array(kiteSystem.turbine.data_log["P_gen_out"])
 # vs_rel = np.array(kiteSystem.turbine.data_log["vs_rel"])
 
 # Og Controller
+ts_controller = np.array(ogController.data_log["ts"])
+P_og_cont = np.array(ogController.data_log["P"])
+F_tether_og_cont = np.array(ogController.data_log["F_tether"])
 Ps_running_mean = np.array(ogController.data_log["P_running_mean"])
 Fs_tether_running_mean = np.array(ogController.data_log["F_tether_running_mean"])
 
@@ -266,17 +269,17 @@ plt.tight_layout(pad=1.0)
 # Og Controller
 fig, ax = plt.subplots(3,1, figsize=(8,8))
 
-ts_controller = np.array(ogController.data_log["ts"])
+
 # print(ts_controller[0:100])
 ax[0].plot(ts_controller, Ps_running_mean)
-ax[0].plot(ts, P_gen_out)
+ax[0].plot(ts_controller, P_og_cont)
 ax[0].legend([r"$P_{running mean}$", r"$P_{generator}$"])
 ax[0].set_title(r"Mean power used in og controller")
 ax[0].set_ylim([-50e3, 170e3])
 ax[0].grid()
 
 ax[1].plot(ts_controller, Fs_tether_running_mean)
-ax[1].plot(ts, Fs_thether)
+ax[1].plot(ts_controller, F_tether_og_cont)
 ax[1].legend([r"$F_{tether, running mean}$", r"$F_{tether}$"])
 ax[1].set_title(r"Tether forces used in og controller")
 ax[1].set_ylim([0, 6e5])

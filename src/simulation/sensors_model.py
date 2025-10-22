@@ -22,10 +22,10 @@ class SensorsModel:
         for key, value in gt_measurments.items():
             mean = self.noise_config[key][0]
             std = self.noise_config[key][1]
-            noised = value + np.random.normal(mean, std)
+            noised_value = value + np.random.normal(mean, std)
 
-            noised_dict[key] = noised
-            self.noise_measurments[key].append(noised)
+            noised_dict[key] = noised_value
+            self.noise_measurments[key].append(noised_value)
         
         return noised_dict
 
