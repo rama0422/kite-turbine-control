@@ -60,7 +60,20 @@ F_tether_mean_init = 3*1e5
 og_controller_div_factor = 250
 og_controller_tsr_const = 57.5
 
-# sensors
+# IMU magnetometer
+h_e = np.array([14361.1, -798.5, 49628.8])/1e2 # eart frame magnetic field at faroe islands 2025-10-23 "https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml?#igrfwmm"
+#"https://repository.library.noaa.gov/view/noaa/71569"
+#noise for magentometer: https://www.researchgate.net/publication/272749646_Magnetometer-Augmented_IMU_Simulator_In-Depth_Elaboration
+angle_ei = -10 * math.pi / 180
+
+#TODO: where should this be placed, not in config?
+R_ei = np.array([[math.cos(angle_ei), -math.sin(angle_ei),  0],
+                [-math.sin(angle_ei), -math.cos(angle_ei),  0],
+                [0,                                     0, -1]])
+h_i = R_ei @ h_e
+
+
+# Sensors
 noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0], #TODO
                  "TetherForce": [0, 2*1e-2*200*1e3/3, 0], #TODO
                  "TJPitchAngle": [0, 1*1e-2*90/3, 0], #TODO

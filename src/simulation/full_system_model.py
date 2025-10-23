@@ -6,11 +6,12 @@ import scipy
 from src.simulation.functions import R_pb, R_pc
 
 class FullSystemModel:
-    def __init__(self, kite, turbine, w_ref_base, dt_controller, dt_measurement_log, controller=None, sensors=None):
+    def __init__(self, kite, turbine, w_ref_base, dt_controller, dt_measurement_log, h_i, controller=None, sensors=None):
         self.kite = kite
         self.turbine = turbine
         self.controller = controller
         self.sensors = sensors
+        self.h_i = h_i
 
         self.dt_controller = dt_controller
         self.dt_measurement_log = dt_measurement_log
@@ -43,7 +44,8 @@ class FullSystemModel:
                             "acc_i": [],
                             "acc_p": [],
                             "acc_b": [],
-                            "omega_b": []}
+                            "omega_b": [],
+                            "h_b": []}
 
 
 
@@ -77,10 +79,11 @@ class FullSystemModel:
 
 
         # IMU measurements
+        R_pb_calc = R_pb(alpha_pb)
         # acceleations
         acc_i = (r_pp * pdot**2 + r_p * pdotdot) # g and b not added since we have zero bouyance + gravity,  + np.array([0,0,g])
         acc_p = R_pi.T @ acc_i
-        acc_b = R_pb(alpha_pb) @ acc_p
+        acc_b = R_pb_calc @ acc_p
 
         # angular velocities
         dR_pi = self.R_pi_last.T @ R_pi
@@ -89,10 +92,14 @@ class FullSystemModel:
         dt = t - self.t_last
         omega_p = np.array([skewed[2,1], skewed[0,2], skewed[1,0]]) / (dt)
 
-        omega_b = R_pb(alpha_pb) @ omega_p
+        omega_b = R_pb_calc @ omega_p
 
         self.R_pi_last = R_pi
         self.t_last = t
+
+        # Magnetometer
+        
+        h_b = R_pb_calc @ R_pi @ self.h_i
 
         # sensor values and logging
         if ((self.sensors != None) & (t - self.t_measurement_last >= self.dt_measurement_log)):
@@ -132,6 +139,7 @@ class FullSystemModel:
         self.data_log["acc_p"].append(acc_p)
         self.data_log["acc_b"].append(acc_b)
         self.data_log["omega_b"].append(omega_b)
+        self.data_log["h_b"].append(h_b)
 
         #turbine data log is found in turbine object
 

@@ -18,7 +18,7 @@ trubine = Turbine(r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T,
 ogController = OgController(P_mean_init, F_tether_mean_init, og_controller_div_factor, og_controller_tsr_const)
 sensors = SensorsModel(noise_configs)
 # kiteSystem = FullSystemModel(kite, trubine) # for running w/o controller and use predetermined w_ref
-kiteSystem = FullSystemModel(kite, trubine, w_ref_base, dt_controller, dt_measurement_log, ogController, sensors)
+kiteSystem = FullSystemModel(kite, trubine, w_ref_base, dt_controller, dt_measurement_log, h_i, ogController, sensors)
 
 # simulation params
 v_current_i = np.array([2,0,0])
@@ -63,6 +63,7 @@ acc_i = np.array(kiteSystem.data_log["acc_i"])
 acc_p = np.array(kiteSystem.data_log["acc_p"])
 acc_b = np.array(kiteSystem.data_log["acc_b"])
 omega_b = np.array(kiteSystem.data_log["omega_b"])
+h_b = np.array(kiteSystem.data_log["h_b"])
 
 # Turbine
 # ts1 = np.array(kiteSystem.turbine.data_log["ts"])
@@ -178,32 +179,44 @@ ax[2,0].set_title(r"Forces in $\hat{e}_3$")
 ax[2,0].set_ylim([-6e5, 6e5])
 ax[2,0].grid()
 
-ax[0,1].plot(ts, acc_i[:, 0])
-ax[0,1].plot(ts, acc_i[:, 1])
-ax[0,1].plot(ts, acc_i[:, 2])
-ax[0,1].legend([r"$x$", r"$y$", r"$z$"])
-ax[0,1].set_title(r"Acc. in inert frame")
-ax[0,1].set_ylim([-15, 15])
+plt.tight_layout(pad=1.0)
+
+
+##### plot IMU #####
+fig, ax = plt.subplots(3, 2, figsize=(15,9))
+ax[0,0].plot(ts, acc_i[:, 0])
+ax[0,0].plot(ts, acc_i[:, 1])
+ax[0,0].plot(ts, acc_i[:, 2])
+ax[0,0].legend([r"$x$", r"$y$", r"$z$"])
+ax[0,0].set_title(r"Acc. in inert frame")
+ax[0,0].set_ylim([-15, 15])
+ax[0,0].grid()
+
+ax[1,0].plot(ts, acc_p[:, 0])
+ax[1,0].plot(ts, acc_p[:, 1])
+ax[1,0].plot(ts, acc_p[:, 2])
+# ax[1,1].plot(ts, acc_b[:, 0])
+# ax[1,1].plot(ts, acc_b[:, 1])
+# ax[1,1].plot(ts, acc_b[:, 2])
+ax[1,0].legend([r"$\hat{e}_1$", r"$\hat{e}_2$", r"$\hat{e}_3$"])
+ax[1,0].set_title(r"Acc. in path frame")
+ax[1,0].set_ylim([-15, 15])
+ax[1,0].grid()
+
+ax[2,0].plot(ts, omega_b[:, 0] * 180 / math.pi)
+ax[2,0].plot(ts, omega_b[:, 1] * 180 / math.pi)
+ax[2,0].plot(ts, omega_b[:, 2] * 180 / math.pi)
+ax[2,0].legend([r"$\hat{e}_1$", r"$\hat{e}_2$", r"$\hat{e}_3$"])
+ax[2,0].set_title(r"Angular velocity in body frame")
+ax[2,0].set_ylim([-100,100])
+ax[2,0].grid()
+
+ax[0,1].plot(ts, h_b[:,0], label=r"$\hat{e}_1$")
+ax[0,1].plot(ts, h_b[:,1], label=r"$\hat{e}_2$")
+ax[0,1].plot(ts, h_b[:,2], label=r"$\hat{e}_3$")
+ax[0,1].legend()
+ax[0,1].set_title(r"Magentic field in body frame")
 ax[0,1].grid()
-
-ax[1,1].plot(ts, acc_p[:, 0])
-ax[1,1].plot(ts, acc_p[:, 1])
-ax[1,1].plot(ts, acc_p[:, 2])
-ax[1,1].plot(ts, acc_b[:, 0])
-ax[1,1].plot(ts, acc_b[:, 1])
-ax[1,1].plot(ts, acc_b[:, 2])
-ax[1,1].legend([r"$\hat{e}_1$", r"$\hat{e}_2$", r"$\hat{e}_3$"])
-ax[1,1].set_title(r"Acc. in path frame")
-ax[1,1].set_ylim([-15, 15])
-ax[1,1].grid()
-
-ax[2,1].plot(ts, omega_b[:, 0] * 180 / math.pi)
-ax[2,1].plot(ts, omega_b[:, 1] * 180 / math.pi)
-ax[2,1].plot(ts, omega_b[:, 2] * 180 / math.pi)
-ax[2,1].legend([r"$\hat{e}_1$", r"$\hat{e}_2$", r"$\hat{e}_3$"])
-ax[2,1].set_title(r"Angular velocity in body frame")
-ax[2,1].set_ylim([-100,100])
-ax[2,1].grid()
 
 plt.tight_layout(pad=1.0)
 
