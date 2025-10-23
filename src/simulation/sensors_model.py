@@ -12,7 +12,16 @@ class SensorsModel:
                                   "TJPitchAngle": [],
                                   "GeneratorSpdRpm": [],
                                   "Power": [],
-                                  "Torque": []}
+                                  "Torque": [],
+                                  "AccX": [],
+                                  "AccY": [],
+                                  "AccZ": [],
+                                  "GyroX": [],
+                                  "GyroY": [],
+                                  "GyroZ": [],
+                                  "MagX": [],
+                                  "MagY": [],
+                                  "MagZ": []}
 
 
     # Add gausian noise and bias to simulation measurments

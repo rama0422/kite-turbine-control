@@ -85,7 +85,7 @@ class FullSystemModel:
         acc_p = R_pi.T @ acc_i
         acc_b = R_pb_calc @ acc_p
 
-        # angular velocities
+        # angular velocities #TODO: does not curently work, think it gets very large for y and z sometimes.
         dR_pi = self.R_pi_last.T @ R_pi
         # skewed = scipy.linalg.logm(dR_pi)
         skewed = self.so3MLog(dR_pi)
@@ -109,7 +109,16 @@ class FullSystemModel:
                             "TJPitchAngle": alpha_pb * 180 / math.pi,
                             "GeneratorSpdRpm": w_gen * 60 / (2*math.pi),
                             "Power": self.turbine.P_gen_out / 1e3,
-                            "Torque": -self.turbine.T_gen_el}
+                            "Torque": -self.turbine.T_gen_el,
+                            "AccX": acc_b[0],
+                            "AccY": acc_b[1],
+                            "AccZ": acc_b[2],
+                            "GyroX": omega_b[0],
+                            "GyroY": omega_b[1],
+                            "GyroZ": omega_b[2],
+                            "MagX": h_b[0],
+                            "MagY": h_b[1],
+                            "MagZ": h_b[2]}
 
             self.sensors.addNoise(measurments, t)
 

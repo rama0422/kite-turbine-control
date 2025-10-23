@@ -61,9 +61,10 @@ og_controller_div_factor = 250
 og_controller_tsr_const = 57.5
 
 # IMU magnetometer
-h_e = np.array([14361.1, -798.5, 49628.8])/1e2 # eart frame magnetic field at faroe islands 2025-10-23 "https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml?#igrfwmm"
+h_e = np.array([14361.1, -798.5, 49628.8])/1e1 # divide by 10 to match data, eart frame magnetic field at faroe islands 2025-10-23 "https://www.ngdc.noaa.gov/geomag/calculators/magcalc.shtml?#igrfwmm"
 #"https://repository.library.noaa.gov/view/noaa/71569"
 #noise for magentometer: https://www.researchgate.net/publication/272749646_Magnetometer-Augmented_IMU_Simulator_In-Depth_Elaboration
+
 angle_ei = -10 * math.pi / 180
 
 #TODO: where should this be placed, not in config?
@@ -79,8 +80,16 @@ noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0], #TODO
                  "TJPitchAngle": [0, 1*1e-2*90/3, 0], #TODO
                  "GeneratorSpdRpm": [0, 0.01*1e-2*10000/3, 0], #TODO
                  "Power": [0, 1*1e-2*100000/1e3/3, 0], #TODO
-                 "Torque": [0, 2*1e-2*1000/3, 0] #TODO
-                 }
+                 "Torque": [0, 2*1e-2*1000/3, 0], #TODO
+                 "AccX": [0, 0.2/3, 0], #TODO
+                 "AccY": [0, 0.2/3, 0],
+                 "AccZ": [0, 0.4/3, 0],
+                 "GyroX": [0, 0.4/3, 0], #TODO
+                 "GyroY": [0, 1/3, 0],
+                 "GyroZ": [0, 0.01/3, 0],
+                 "MagX": [0, 10/3, 0], #TODO
+                 "MagY": [0, 80/3, 0],
+                 "MagZ": [0, 30/3, 0]}
 
 # Simulation
 dt = 0.02
