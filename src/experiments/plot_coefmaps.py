@@ -12,16 +12,34 @@ C_Ls = [C_L(alpha) for alpha in alphas]
 C_Ds = [C_D(alpha, C_L(alpha)) for alpha in alphas]
 
 # fig, ax = plt.subplots(1,1, figsize=(12,8))
-fig = plt.figure(figsize=(9,6))
+fig = plt.figure(figsize=(12,6))
 
-plt.plot(alphas * 180 / math.pi, C_Ls, label=r"$C_L$")
-plt.plot(alphas * 180 / math.pi, C_Ds, label=r"$C_D$")
-plt.title(r"Aero coefficients$")
-plt.xlabel("AoA")
+plt.plot(alphas * 180 / math.pi, C_Ls, 'k', label=r"$C_L$", linewidth=2.5)
+plt.plot(alphas * 180 / math.pi, C_Ds, 'k--', label=r"$C_D$", linewidth=2.5)
+plt.axhline(y=0, color='k', linewidth=1) #, linestyle='--'
+plt.title(r"Kite aerodynamic coefficients")
+plt.xlabel(r"Angle of Attack $\alpha$")
 plt.ylabel(r"$C_L$, $C_D$")
 plt.legend()
+plt.xlim([-50,50])
 # ax[0].set_ylabel("$C_L$")
 plt.grid()
+
+# plt.figure(figsize=(6,6))
+# plt.plot(alphas * 180 / math.pi, C_Ls, "k", linewidth=2.5)
+# plt.title(r"Kite lift coefficient $C_L$")
+# plt.xlabel("Angle of attack $\\alpha$")
+# plt.ylabel("$C_L$")
+# plt.xlim([-30,30])
+# plt.grid()
+
+# plt.figure(figsize=(6,6))
+# plt.plot(alphas * 180 / math.pi, C_Ds, "k", linewidth=2.5)
+# plt.title(r"Kite drag coefficient $C_D$")
+# plt.xlabel("Angle of attack $\\alpha$")
+# plt.ylabel("$C_D$")
+# plt.xlim([-30,30])
+# plt.grid()
 
 # ax[0].plot(alphas * 180 / math.pi, C_Ls)
 # ax[0].plot(alphas * 180 / math.pi, C_Ds)
@@ -37,7 +55,7 @@ plt.grid()
 # ax[1].set_ylabel("$C_D$")
 # ax[1].grid()
 
-plt.tight_layout()
+# plt.tight_layout()
 # plt.show()
 
 
@@ -47,22 +65,38 @@ TSRs = np.linspace(0, 7, 100)
 C_ps = [Cp(TSR) for TSR in TSRs]
 C_fs = [Cf(TSR) for TSR in TSRs]
 
-fig, ax = plt.subplots(1,2, figsize=(15,5))
+# fig, ax = plt.subplots(1,2, figsize=(15,5))
 
-ax[0].plot(TSRs, C_ps)
-ax[0].set_title(r"Power coefficient $C_P$")
-ax[0].set_xlabel("Tip speed ratio $\\lambda$")
-ax[0].set_ylabel("$C_P$")
-ax[0].grid()
+# ax[0].plot(TSRs, C_ps)
+# ax[0].set_title(r"Power coefficient $C_P$")
+# ax[0].set_xlabel("Tip speed ratio $\\lambda$")
+# ax[0].set_ylabel("$C_P$")
+# ax[0].grid()
 
-ax[1].plot(TSRs, C_fs)
-ax[1].set_title(r"Force coefficient $C_F$")
-ax[1].set_xlabel("Tip speed ratio $\\lambda$")
-ax[1].set_ylabel("$C_F$")
-ax[1].grid()
+# ax[1].plot(TSRs, C_fs)
+# ax[1].set_title(r"Force coefficient $C_F$")
+# ax[1].set_xlabel("Tip speed ratio $\\lambda$")
+# ax[1].set_ylabel("$C_F$")
+# ax[1].grid()
 
-plt.tight_layout()
+# plt.tight_layout()
 # plt.show()
+
+plt.figure(figsize=(6,6))
+plt.plot(TSRs, C_ps, "k", linewidth=2.5)
+plt.title(r"Turbine power coefficient $C_P$")
+plt.xlabel("Tip speed ratio $\\lambda$")
+plt.ylabel("$C_P$")
+plt.xlim([0,7])
+plt.grid()
+
+plt.figure(figsize=(6,6))
+plt.plot(TSRs, C_fs, "k", linewidth=2.5)
+plt.title(r"Turbine force coefficient $C_F$")
+plt.xlabel("Tip speed ratio $\\lambda$")
+plt.ylabel("$C_F$")
+plt.xlim([0,7])
+plt.grid()
 
 ## Torque-speed
 # fit T-w curve
