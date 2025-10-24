@@ -8,7 +8,7 @@ from src.simulation.functions import Cp, Cf, MaxTorqueSpeed,T_cap,Efficiency_loo
 
 
 class Turbine:
-    def __init__(self, r_turb, J_turb, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, w_limit, N_gear, eff_gear, kp, ki):
+    def __init__(self, r_turb, J_gen, J_turb, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, w_limit, N_gear, eff_gear, kp, ki):
         # turbine params
         self.r_turb = r_turb
         self.A_turb = math.pi *r_turb**2
@@ -88,7 +88,7 @@ class Turbine:
 
         # calculate derivatives
         Idot = w_error
-        wdot_gen = (T_gen_mech + T_gen_el) / (self.J_gen + self.J_turb / self.N_gear**2)
+        wdot_gen = (T_gen_mech - T_gen_el) / (self.J_gen + self.J_turb / self.N_gear**2)
 
         self.data_log["ts"].append(t)
         self.data_log["Fs_turb"].append(F_turb)

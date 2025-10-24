@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
 from src.simulation.turbine_model import Turbine
-from src.utility.configs import r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, w_ref_base, w_limit, N_gear, eff_gear, kp, ki, rho, dt, t_end
+from src.utility.configs import r_turb, J_gen, J_turb, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, w_ref_base, w_limit, N_gear, eff_gear, kp, ki, rho, dt, t_end
 
 
 
-turbine = Turbine(r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T,w_limit, N_gear, eff_gear, kp, ki)
+turbine = Turbine(r_turb, J_gen, J_turb, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T,w_limit, N_gear, eff_gear, kp, ki)
 
 
 # time varying v_rel and w_ref functions
@@ -16,7 +16,7 @@ def v_rel_fun(t):
     return 5 + 1.5*math.sin(0.5*t)
 
 def w_ref_fun(t):
-    return w_ref_base + 100*math.sin(0.5*t)
+    return w_ref_base + 10*math.sin(0.5*t)
 
 
 # Simulation params
