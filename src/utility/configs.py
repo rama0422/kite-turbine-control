@@ -15,8 +15,8 @@ viviani_type = "elliptic" # ["cylindrical", "elliptic"]
 r_path = 5 # elevation changes around 10 m durign cycle (from data) d = 5*2 = 10
 
 # Elliptic
-a_path = 3
-b_path = 6
+a_path = 2
+b_path = 5.2
 
 # Path dependant pitch angle (TJPitchAngle)
 TJpitch_offset = 0
@@ -40,7 +40,7 @@ T_gen_max_w = 400
 w_gen_max = 4000 / 60 * 2 * np.pi
 w_gen_max_T = 1000 / 60 * 2 * np.pi
 
-eff_gear = 0.99
+eff_gear = 0.98
 kp = 30
 ki = 20
 # T_gen_el_limit = 2000

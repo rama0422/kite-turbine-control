@@ -42,7 +42,7 @@ class OgController:
         return w_ref
 
     def updateRunningMeans(self, P, F_tether):
-        eps = 0.99999
+        eps = 0.9999
         self.P_running_mean = (self.P_running_mean*eps + P*(1-eps)) #TODO: calculate real means
         self.F_tether_running_mean = (self.F_tether_running_mean*eps + F_tether*(1-eps))
 
