@@ -36,10 +36,19 @@ r_turb = 0.5
 J_gen = 3
 J_turb = 0.5
 # P_gen_max = 2000
-T_gen_max = 700
-T_gen_max_w = 400
-w_gen_max = 4000 / 60 * 2 * np.pi
-w_gen_max_T = 1000 / 60 * 2 * np.pi
+
+"""From generator test"""
+T_gen_max = 399.43 #Rated torque
+T_gen_max_w = 319.83
+w_gen_max = 3189.99 / 60 * 2 * np.pi
+w_gen_max_T = 2559.61 / 60 * 2 * np.pi
+
+w_limit = 5000 / 60 * 2 * np.pi
+w_test = np.array([3189.99,2559.61,2511.99,2464.43,2416.90,2369.39,2321.90,2263.40,2204.96,2146.56,2088.20,2029.91,1946.22,1862.60,1779.07,1695.61,1612.26,1528.99,1445.63,1362.48,1279.37])
+T_test = np.array([319.82,399.43,386.84,373.77,360.19,346.04,331.35,317.47,302.85,287.46,271.20,254.02,238.79,222.18,204.05,184.11,162.11,137.65,110.45,79.58,44.33])
+efficiency_test = np.array([93.60,93.40,93.36,93.30,93.24,93.17,93.09,93.03,92.95,92.86,92.74,92.60,92.46,92.30,92.07,91.77,91.34,90.75,89.71,88.08,84.19])/100
+
+
 
 eff_gear = 0.98
 kp = 30
@@ -56,8 +65,8 @@ w_ref_base = 2000 / 60 * 2 * np.pi
 # og_controller_tsr_const = 57.5
 
 # og for simulation:
-P_mean_init = 7*1e4
-F_tether_mean_init = 3*1e5
+P_mean_init = 5*1e4
+F_tether_mean_init = 2*1e5
 og_controller_div_factor = 250
 og_controller_tsr_const = 57.5
 

@@ -1,8 +1,9 @@
 import math
 import numpy as np
 import sympy as sp
+from scipy.interpolate import griddata,RegularGridInterpolator,PchipInterpolator
 
-from src.utility.configs import rho, g, R_path, r_path, a_path, b_path, viviani_type, theta_path, TJpitch_amp, TJpitch_offset, TJpitch_shift
+from src.utility.configs import rho, g, R_path, r_path, a_path, b_path, viviani_type, theta_path, TJpitch_amp, TJpitch_offset, TJpitch_shift,w_test,T_test,efficiency_test,w_limit,T_gen_max
 
 
 ########### KITE #############
@@ -87,6 +88,20 @@ elif (viviani_type == "elliptic"):
         return np.array(path_pp_lamb(p, R_path, a_path, b_path, theta_path))
 
 
+"""Get efficiency map"""
+points = np.column_stack((w_test, T_test)) #from efficiency data
+
+#Create Grid
+speedAxis = np.linspace(0, w_limit, 5000) #fom 0 -> 5000
+torqueAxis = np.linspace(-T_gen_max,T_gen_max, 1500) #from -400 -> 400
+speedGrid, torqueGrid = np.meshgrid(speedAxis,torqueAxis)
+
+#Interpolate and efficiency lookup
+efficiency_grid = griddata(points,efficiency_test,xi=(speedGrid, torqueGrid),method='nearest')
+interp_eff = RegularGridInterpolator((torqueAxis, speedAxis),efficiency_grid,bounds_error=False,fill_value= np.nan)
+
+def Efficiency_lookup(T,w):
+    return interp_eff((T,w))
 
 
 #  TJPitchAngle in degrees (tether-joint)
@@ -139,7 +154,7 @@ def C_L(alpha):
 
 def C_D(alpha, C_L):
     alpha = alpha * 180 / math.pi
-    c = 0.05 + C_L**2 / (math.pi * 0.9 * 3) # see sources
+    c = 0.05 + C_L**2 / (math.pi * 0.9 * 3)+0.06 # see sources
     return c
 
 # Path to current frame
@@ -192,6 +207,17 @@ def MaxTorqueSpeed(T_in, w_in, T_max, T_max_w, w_max, w_max_T, m, b):
         T_out = -T_out
 
     return T_out, w_out
+
+
+"""Function to stay within torque limit"""
+def T_cap(T_requested,speed_rpm,speedLimit,corner_point_speed,corner_point_torque,m,b):
+    cap_dn = m*speed_rpm + b
+
+    Torque_cap = np.where(speed_rpm <= corner_point_speed,corner_point_torque, np.where(speed_rpm <= speedLimit, np.maximum(0, cap_dn),np.nan))
+
+    T_capped = np.clip(T_requested, -Torque_cap, Torque_cap)
+
+    return T_capped
      
 
 # if (w_gen < self.w_gen_max_T):

@@ -109,7 +109,7 @@ class FullSystemModel:
                             "TJPitchAngle": alpha_pb * 180 / math.pi,
                             "GeneratorSpdRpm": w_gen * 60 / (2*math.pi),
                             "Power": self.turbine.P_gen_out / 1e3,
-                            "Torque": -self.turbine.T_gen_el,
+                            "Torque": self.turbine.T_gen_el,
                             "AccX": acc_b[0],
                             "AccY": acc_b[1],
                             "AccZ": acc_b[2],

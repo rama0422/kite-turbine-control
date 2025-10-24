@@ -14,7 +14,7 @@ from src.simulation.functions import path
 
 
 kite = Kite(S, m, vol)
-trubine = Turbine(r_turb, J_gen, J_turb, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki)
+trubine = Turbine(r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T,w_limit, N_gear, eff_gear, kp, ki)
 ogController = OgController(P_mean_init, F_tether_mean_init, og_controller_div_factor, og_controller_tsr_const)
 sensors = SensorsModel(noise_configs)
 # kiteSystem = FullSystemModel(kite, trubine) # for running w/o controller and use predetermined w_ref
@@ -266,8 +266,8 @@ ax[1,0].set_ylim([-50, 50])
 ax[1,0].grid()
 
 ax[2,0].plot(ts_sensor, torque_meas, label=r"$T_{gen,el,meas.}$") if plot_meas else None
-ax[2,0].plot(ts, -Ts_gen_el, label=r"$T_{gen,el}$")
-ax[2,0].plot(ts, -Ts_gen_el_uncliped, label=r"$T_{gen,el(uncliped)}$")
+ax[2,0].plot(ts, Ts_gen_el, label=r"$T_{gen,el}$")
+ax[2,0].plot(ts, Ts_gen_el_uncliped, label=r"$T_{gen,el(uncliped)}$")
 ax[2,0].plot(ts, Ts_gen_mech, label=r"$T_{gen,mech}$")
 ax[2,0].axhline(y=0, color='k', linestyle='--', linewidth=0.7)
 ax[2,0].set_title(r"Torques")
