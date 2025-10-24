@@ -154,7 +154,7 @@ def C_L(alpha):
 
 def C_D(alpha, C_L):
     alpha = alpha * 180 / math.pi
-    c = 0.05 + C_L**2 / (math.pi * 0.9 * 3)+0.06 # see sources
+    c = 0.05 + C_L**2 / (math.pi * 0.9 * 3) + 0.05 # TODO: add thether drag instead # see sources
     return c
 
 # Path to current frame

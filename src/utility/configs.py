@@ -30,10 +30,10 @@ vol = m/rho # for neutral buoyancy
 
 
 # Turbine
-N_gear = 6.1 # TODO: does turbine or gen rotate faster
+N_gear = 6.1 # TODO: 
 r_turb = 0.5
 # A_turb = math.pi *r_turb**2
-J_gen = 3
+J_gen = 2.0
 J_turb = 0.5
 # P_gen_max = 2000
 
@@ -50,9 +50,9 @@ efficiency_test = np.array([93.60,93.40,93.36,93.30,93.24,93.17,93.09,93.03,92.9
 
 
 
-eff_gear = 0.98
-kp = 30
-ki = 20
+eff_gear = 0.99
+kp = 32
+ki = 10
 # T_gen_el_limit = 2000
 
 # Controllers
@@ -66,8 +66,8 @@ w_ref_base = 2000 / 60 * 2 * np.pi
 
 # og for simulation:
 P_mean_init = 5*1e4
-F_tether_mean_init = 2*1e5
-og_controller_div_factor = 250
+F_tether_mean_init = 2.2*1e5
+og_controller_div_factor = 140
 og_controller_tsr_const = 57.5
 
 # IMU magnetometer
