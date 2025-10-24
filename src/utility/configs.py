@@ -75,7 +75,7 @@ h_e = np.array([14361.1, -798.5, 49628.8])/1e1 # divide by 10 to match data, ear
 #"https://repository.library.noaa.gov/view/noaa/71569"
 #noise for magentometer: https://www.researchgate.net/publication/272749646_Magnetometer-Augmented_IMU_Simulator_In-Depth_Elaboration
 
-angle_ei = -10 * math.pi / 180
+angle_ei = 190 * math.pi / 180
 
 #TODO: where should this be placed, not in config?
 R_ei = np.array([[math.cos(angle_ei), -math.sin(angle_ei),  0],

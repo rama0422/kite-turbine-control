@@ -99,7 +99,7 @@ class FullSystemModel:
 
         # Magnetometer
         
-        h_b = R_pb_calc @ R_pi @ self.h_i
+        h_b = R_pb_calc @ R_pi.T @ self.h_i
 
         # sensor values and logging
         if ((self.sensors != None) & (t - self.t_measurement_last >= self.dt_measurement_log)):
