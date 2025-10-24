@@ -14,7 +14,7 @@ from src.simulation.functions import path
 
 
 kite = Kite(S, m, vol)
-trubine = Turbine(r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki)
+trubine = Turbine(r_turb, J_gen, J_turb, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki)
 ogController = OgController(P_mean_init, F_tether_mean_init, og_controller_div_factor, og_controller_tsr_const)
 sensors = SensorsModel(noise_configs)
 # kiteSystem = FullSystemModel(kite, trubine) # for running w/o controller and use predetermined w_ref

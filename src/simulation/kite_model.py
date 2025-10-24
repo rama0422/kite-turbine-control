@@ -37,8 +37,9 @@ class Kite:
                          "Fs_buoy_i": [],
                          "Fs_tot_i": [],
                          "Fs_thether_abs": [],
-                         "Fs_aero_s": [],
-                         "Fs_turb_s": []}
+                         "Fs_aero_p": [],
+                         "Fs_turb_p": []}
+
 
     # Caluclate kinematics of the kites current position on path
     def kinematics(self, p):
