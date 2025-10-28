@@ -49,7 +49,8 @@ class FullSystemModel:
                             "p": [],
                             "pdot": [],
                             "w_gen": [],
-                            "I": []}
+                            "I": [],
+                            "T_gen_el": []}
 
 
 
@@ -58,6 +59,7 @@ class FullSystemModel:
         pdot = x[1]
         w_gen = x[2]
         I = x[3]
+        T_gen_el = x[4]
 
         r, r_p, r_pp, e1, e2, e3, R_pi = self.kite.kinematics(p)
 
@@ -75,7 +77,7 @@ class FullSystemModel:
             self.w_ref = self.controller.getSpeedRef(t, P_last, F_tether_last)
 
         #TODO: turbin should in reality get v_rel from the body frame (frame rotated with alpha_pb)
-        [wdot_gen, Idot] = self.turbine.turbineDynamics(t, [w_gen, I], -v_rel_s[0], self.w_ref)
+        [wdot_gen, Idot, Tdot_gen] = self.turbine.turbineDynamics(t, [w_gen, I, T_gen_el], -v_rel_s[0], self.w_ref)
         # F_turb = self.turbine.F_turb
 
         pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether, F_aero_p, F_turb_p = self.kite.accleration(pdot, r_p, r_pp, e1, e3, R_pi, v_rel_c[0], alpha, self.turbine.F_turb)
@@ -131,6 +133,7 @@ class FullSystemModel:
         # data logging
         # if ((t - self.t_last_log) >= self.dt_log):
         #     self.t_last_log = t
+        # kinematics
         self.data_log["ts"].append(t)
         self.data_log["r"].append(r)
         self.data_log["r_p"].append(r_p)
@@ -142,6 +145,7 @@ class FullSystemModel:
         self.data_log["alpha_pb"].append(alpha_pb)
         self.data_log["alpha"].append(alpha)
 
+        # forces
         self.data_log["Fs_aero_i"].append(F_aero_i)
         self.data_log["Fs_grav_i"].append(F_mg_i)
         self.data_log["Fs_buoy_i"].append(F_b_i)
@@ -150,20 +154,21 @@ class FullSystemModel:
         self.data_log["Fs_aero_p"].append(F_aero_p)
         self.data_log["Fs_turb_p"].append(F_turb_p)
 
+        # IMU
         self.data_log["acc_i"].append(acc_i)
         self.data_log["acc_p"].append(acc_p)
         self.data_log["acc_b"].append(acc_b)
         self.data_log["omega_b"].append(omega_b)
         self.data_log["h_b"].append(h_b)
 
+        # states
         self.data_log["p"].append(p)
         self.data_log["pdot"].append(pdot)
         self.data_log["w_gen"].append(w_gen)
         self.data_log["I"].append(I)
+        self.data_log["T_gen_el"].append(T_gen_el)
 
-        #turbine data log is found in turbine object
-
-        return [pdot, pdotdot, wdot_gen, Idot]
+        return [pdot, pdotdot, wdot_gen, Idot, Tdot_gen]
     
     # faster then scipy.linalg.logm
     def so3MLog(self, R):

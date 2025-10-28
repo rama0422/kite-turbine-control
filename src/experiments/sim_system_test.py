@@ -26,12 +26,13 @@ p0 = 0
 pdot0 = 0.6
 w0_gen = 2100 / 60 * 2 * math.pi
 I0 = 0
-x0 = [p0, pdot0, w0_gen, I0]
+T0_gen_el = 0
+x0 = [p0, pdot0, w0_gen, I0, T0_gen_el]
 
 plot_meas = True
 
 # systemDynamics(self, t, x, v_current_i, w_ref = w_ref_base)
-sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, max_step = dt, t_eval=np.arange(0, t_end, 0.004)) #, t_eval=np.arange(0, t_end, dt)
+sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, method='RK45', max_step = dt) #, t_eval=np.arange(0, t_end, dt) , t_eval=np.arange(0, t_end, 0.004)
 
 print(sol)
 
@@ -48,6 +49,7 @@ s1_p = np.array(kiteSystem.data_log["p"])
 s2_pdot= np.array(kiteSystem.data_log["pdot"])
 s3_w_gen = np.array(kiteSystem.data_log["w_gen"])
 s4_I = np.array(kiteSystem.data_log["I"])
+s5_T_gen_el = np.array(kiteSystem.data_log["T_gen_el"])
 
 # print(len(ogController.data_log["ts"]))
 rs = np.array(kiteSystem.data_log["r"])
@@ -72,11 +74,12 @@ acc_b = np.array(kiteSystem.data_log["acc_b"])
 omega_b = np.array(kiteSystem.data_log["omega_b"])
 h_b = np.array(kiteSystem.data_log["h_b"])
 
-# Turbine
+# Turbine/generator
 # ts1 = np.array(kiteSystem.turbine.data_log["ts"])
 Fs_turb = np.array(kiteSystem.turbine.data_log["Fs_turb"])
 Ts_gen_mech = np.array(kiteSystem.turbine.data_log["Ts_gen_mech"])
-Ts_gen_el_uncliped = np.array(kiteSystem.turbine.data_log["Ts_gen_el_uncliped"])
+Ts_gen_el_ref_uncliped = np.array(kiteSystem.turbine.data_log["Ts_gen_el_ref_uncliped"])
+Ts_gen_el_ref = np.array(kiteSystem.turbine.data_log["Ts_gen_el_ref"])
 Ts_gen_el = np.array(kiteSystem.turbine.data_log["Ts_gen_el"])
 ws_ref = np.array(kiteSystem.turbine.data_log["ws_ref"])
 errors = np.array(kiteSystem.turbine.data_log["errors"])
@@ -279,8 +282,9 @@ ax[1,0].set_ylim([-50, 50])
 ax[1,0].grid()
 
 ax[2,0].plot(ts_sensor, torque_meas, label=r"$T_{gen,el,meas.}$") if plot_meas else None
-ax[2,0].plot(ts, Ts_gen_el, label=r"$T_{gen,el}$")
-ax[2,0].plot(ts, Ts_gen_el_uncliped, label=r"$T_{gen,el(uncliped)}$")
+ax[2,0].plot(ts, s5_T_gen_el, label=r"$T_{gen,el} (state 5)$")
+ax[2,0].plot(ts, Ts_gen_el_ref_uncliped, label=r"$T_{gen,el,ref(uncliped)}$")
+ax[2,0].plot(ts, Ts_gen_el_ref, label=r"$T_{gen,el,ref}$")
 ax[2,0].plot(ts, Ts_gen_mech, label=r"$T_{gen,mech}$")
 ax[2,0].axhline(y=0, color='k', linestyle='--', linewidth=0.7)
 ax[2,0].set_title(r"Torques")

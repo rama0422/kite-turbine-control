@@ -101,7 +101,13 @@ efficiency_grid = griddata(points,efficiency_test,xi=(speedGrid, torqueGrid),met
 interp_eff = RegularGridInterpolator((torqueAxis, speedAxis),efficiency_grid,bounds_error=False,fill_value= np.nan)
 
 def Efficiency_lookup(T,w):
-    return interp_eff((T,w))
+    eta = interp_eff((T,w))
+
+    if (np.isnan(eta) or np.isinf(eta)):
+        # print("Bad eta: ", eta)
+        eta = 0.0
+
+    return eta
 
 
 #  TJPitchAngle in degrees (tether-joint)
@@ -213,9 +219,12 @@ def MaxTorqueSpeed(T_in, w_in, T_max, T_max_w, w_max, w_max_T, m, b):
 def T_cap(T_requested,speed_rpm,speedLimit,corner_point_speed,corner_point_torque,m,b):
     cap_dn = m*speed_rpm + b
 
-    Torque_cap = np.where(speed_rpm <= corner_point_speed,corner_point_torque, np.where(speed_rpm <= speedLimit, np.maximum(0, cap_dn),np.nan))
-
-    T_capped = np.clip(T_requested, -Torque_cap, Torque_cap)
+    if((speed_rpm <= speedLimit) & (speed_rpm > 0)):
+        Torque_cap = np.where(speed_rpm <= corner_point_speed,corner_point_torque, np.where(speed_rpm <= speedLimit, np.maximum(0, cap_dn),np.nan))
+        T_capped = np.clip(T_requested, -Torque_cap, Torque_cap)
+    else:
+        # print("Over/under speed: ", speed_rpm)
+        T_capped = 0
 
     return T_capped
      

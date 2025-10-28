@@ -51,7 +51,7 @@ efficiency_test = np.array([93.60,93.40,93.36,93.30,93.24,93.17,93.09,93.03,92.9
 
 
 eff_gear = 0.99
-kp = 20
+kp = 25
 ki = 15
 # T_gen_el_limit = 2000
 

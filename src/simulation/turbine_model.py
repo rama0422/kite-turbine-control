@@ -32,7 +32,7 @@ class Turbine:
         self.P_gen_out = 0
         self.T_gen_el = 0
 
-        # fit T-w curve
+        # fit T-w curve #TODO: ok to be done here?
 
         ws = np.array([w_gen_max_T, w_gen_max])
         Ts = np.array([T_gen_max, T_gen_max_w])
@@ -43,7 +43,8 @@ class Turbine:
         self.data_log = {"ts": [],
                          "Fs_turb": [],
                          "Ts_gen_mech": [],
-                         "Ts_gen_el_uncliped": [],
+                         "Ts_gen_el_ref_uncliped": [],
+                         "Ts_gen_el_ref": [],
                          "Ts_gen_el":[],
                          "ws_ref": [],
                          "errors": [],
@@ -55,29 +56,41 @@ class Turbine:
     def turbineDynamics(self, t, x, v_rel, w_ref):
         w_gen = x[0]
         I = x[1]
+        T_gen_el = x[2]
 
+        # turbine
         w_turb = w_gen / self.N_gear
-
         TSR = (w_turb * self.r_turb) / v_rel
 
         P_turb = 1/2 * rho * self.A_turb * v_rel**3 * Cp(TSR)
         T_turb = P_turb / w_turb if w_turb != 0 else 0
         F_turb = 1/2 * rho * self.A_turb * v_rel**2 * Cf(TSR)
         
+        # shaft/generator
         T_gen_mech = self.eff_gear * (T_turb / self.N_gear)
+        wdot_gen = (T_gen_mech - T_gen_el) / (self.J_gen + self.J_turb / self.N_gear**2)
 
+        eff = Efficiency_lookup(T_gen_el, w_gen)
+        P_gen_out = T_gen_el * w_gen * eff
+
+        # PI torque ref controller
         """Modified: w_error>0 (want to slow down) -> Te>0 -> BREAKING TORQUE -> Decrease w' """
-
         w_error = w_gen - w_ref
-        T_gen_el_uncliped = self.kp * w_error + self.ki * I # TODO: add some sort of delay/inertia to T_gen to no jump to much with discretet w_ref
+        T_gen_el_ref_uncliped = self.kp * w_error + self.ki * I
+        T_gen_el_ref = T_cap(T_gen_el_ref_uncliped, w_gen, self.w_limit, self.w_gen_max_T, self.T_gen_max, self.m, self.b)
+
+        Idot = w_error
+
+        # torque dynamics https://www.sciencedirect.com/science/article/pii/S1364032115006814
+        time_const_T_gen = 0.2
+        Tdot_gen = (T_gen_el_ref - T_gen_el) / time_const_T_gen
 
         #T_gen_el = MaxTorqueSpeed(w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
         #TODO: add limit to turbine to not exceed w_gen
 
-        T_gen_el = T_cap(T_gen_el_uncliped,w_gen,self.w_limit,self.w_gen_max_T,self.T_gen_max,self.m,self.b)
+        # T_gen_el = T_cap(T_gen_el_uncliped,w_gen,self.w_limit,self.w_gen_max_T,self.T_gen_max,self.m,self.b)
 
-        eff = Efficiency_lookup(T_gen_el,w_gen)
-        P_gen_out = T_gen_el * w_gen * eff
+        
 
 
 
@@ -86,14 +99,12 @@ class Turbine:
         self.P_gen_out = P_gen_out
         self.T_gen_el = T_gen_el
 
-        # calculate derivatives
-        Idot = w_error
-        wdot_gen = (T_gen_mech - T_gen_el) / (self.J_gen + self.J_turb / self.N_gear**2)
-
+        # log data
         self.data_log["ts"].append(t)
         self.data_log["Fs_turb"].append(F_turb)
         self.data_log["Ts_gen_mech"].append(T_gen_mech)
-        self.data_log["Ts_gen_el_uncliped"].append(T_gen_el_uncliped)
+        self.data_log["Ts_gen_el_ref_uncliped"].append(T_gen_el_ref_uncliped)
+        self.data_log["Ts_gen_el_ref"].append(T_gen_el_ref)
         self.data_log["Ts_gen_el"].append(T_gen_el)
         self.data_log["ws_ref"].append(w_ref)
         self.data_log["errors"].append(w_error)
@@ -101,4 +112,4 @@ class Turbine:
         self.data_log["P_gen_out"].append(P_gen_out)
         self.data_log["vs_rel"].append(v_rel)
 
-        return [wdot_gen, Idot]
+        return [wdot_gen, Idot, Tdot_gen]
