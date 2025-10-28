@@ -45,7 +45,11 @@ class FullSystemModel:
                             "acc_p": [],
                             "acc_b": [],
                             "omega_b": [],
-                            "h_b": []}
+                            "h_b": [],
+                            "p": [],
+                            "pdot": [],
+                            "w_gen": [],
+                            "I": []}
 
 
 
@@ -103,6 +107,8 @@ class FullSystemModel:
 
         # sensor values and logging
         if ((self.sensors != None) & (t - self.t_measurement_last >= self.dt_measurement_log)):
+
+            self.t_measurement_last = t
             # change values to obtaine data similar to the real data
             measurments = { "Elevation": r[2], # z
                             "TetherForce": self.F_thether,
@@ -149,6 +155,11 @@ class FullSystemModel:
         self.data_log["acc_b"].append(acc_b)
         self.data_log["omega_b"].append(omega_b)
         self.data_log["h_b"].append(h_b)
+
+        self.data_log["p"].append(p)
+        self.data_log["pdot"].append(pdot)
+        self.data_log["w_gen"].append(w_gen)
+        self.data_log["I"].append(I)
 
         #turbine data log is found in turbine object
 

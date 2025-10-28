@@ -33,7 +33,7 @@ vol = m/rho # for neutral buoyancy
 N_gear = 6.1 # TODO: 
 r_turb = 0.5
 # A_turb = math.pi *r_turb**2
-J_gen = 2.0
+J_gen = 1.0
 J_turb = 0.5
 # P_gen_max = 2000
 
@@ -51,8 +51,8 @@ efficiency_test = np.array([93.60,93.40,93.36,93.30,93.24,93.17,93.09,93.03,92.9
 
 
 eff_gear = 0.99
-kp = 32
-ki = 10
+kp = 20
+ki = 15
 # T_gen_el_limit = 2000
 
 # Controllers

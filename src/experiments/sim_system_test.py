@@ -31,16 +31,23 @@ x0 = [p0, pdot0, w0_gen, I0]
 plot_meas = True
 
 # systemDynamics(self, t, x, v_current_i, w_ref = w_ref_base)
-sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, max_step = dt, t_eval=np.arange(0, t_end, dt))
+sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, max_step = dt, t_eval=np.arange(0, t_end, 0.004)) #, t_eval=np.arange(0, t_end, dt)
 
 print(sol)
 
 # Kite
 ts = np.array(kiteSystem.data_log["ts"])
-# print(len(ts))
-# print(len(sol.t))
+print("kite dyn steps: ", len(ts))
+print("sol steps: ", len(sol.t))
+print(len(sol.y[2]))
 # print(sol.t[0:30])
 # print(ts[0:30])
+
+# states
+s1_p = np.array(kiteSystem.data_log["p"])
+s2_pdot= np.array(kiteSystem.data_log["pdot"])
+s3_w_gen = np.array(kiteSystem.data_log["w_gen"])
+s4_I = np.array(kiteSystem.data_log["I"])
 
 # print(len(ogController.data_log["ts"]))
 rs = np.array(kiteSystem.data_log["r"])
@@ -79,6 +86,7 @@ P_gen_out = np.array(kiteSystem.turbine.data_log["P_gen_out"])
 
 # Og Controller
 ts_controller = np.array(ogController.data_log["ts"])
+print("controller steps: ",len(ts_controller))
 P_og_cont = np.array(ogController.data_log["P"])
 F_tether_og_cont = np.array(ogController.data_log["F_tether"])
 Ps_running_mean = np.array(ogController.data_log["P_running_mean"])
@@ -86,6 +94,7 @@ Fs_tether_running_mean = np.array(ogController.data_log["F_tether_running_mean"]
 
 # Sensor measurments
 ts_sensor = np.array(sensors.noise_measurments["ts"])
+print("sensor steps: ",len(ts_sensor))
 elevation_meas = np.array(sensors.noise_measurments["Elevation"])
 tether_force_meas = np.array(sensors.noise_measurments["TetherForce"])
 tj_pitch_angle_meas = np.array(sensors.noise_measurments["TJPitchAngle"])
@@ -111,11 +120,13 @@ xs, ys, zs = rs.T
 ####### Kite kinematic plots ######
 fix, ax = plt.subplots(3,2, figsize=(15,9))
 
-ax[0,0].plot(sol.t, sol.y[0] % (4*math.pi))
+# ax[0,0].plot(sol.t, sol.y[0] % (4*math.pi))
+ax[0,0].plot(ts, s1_p % (4*math.pi))
 ax[0,0].set_title(r"$p(t)$")
 ax[0,0].grid()
 
-ax[1,0].plot(sol.t, sol.y[1])
+# ax[1,0].plot(sol.t, sol.y[1])
+ax[1,0].plot(ts, s2_pdot)
 ax[1,0].set_title(r"$\dot{p}(t)$")
 ax[1,0].grid()
 
@@ -249,7 +260,8 @@ plt.tight_layout(pad=1.0)
 fig, ax = plt.subplots(4,2, figsize=(15,9))
 
 ax[0,0].plot(ts_sensor, gen_spd_rpm_meas, label=r"$\omega_{gen,meas.}$") if plot_meas else None
-ax[0,0].plot(sol.t, sol.y[2] * 60 / (2*math.pi), label=r"$\omega_{gen}$")
+# ax[0,0].plot(sol.t, sol.y[2] * 60 / (2*math.pi), label=r"$\omega_{gen}$")
+ax[0,0].plot(ts, s3_w_gen * 60 / (2*math.pi), label=r"$\omega_{gen}$")
 # ax[0].plot(sol.t, np.ones(len(sol.t)) * w_ref)
 ax[0,0].plot(ts, ws_ref * 60 / (2*math.pi), label=r"$\omega_{gen,ref}$")
 ax[0,0].set_title(r"Rotor speed $\omega_{gen}$")
@@ -258,7 +270,8 @@ ax[0,0].legend()
 ax[0,0].set_ylim([1e3, 4e3])
 ax[0,0].grid()
 
-ax[1,0].plot(sol.t, sol.y[3])
+# ax[1,0].plot(sol.t, sol.y[3])
+ax[1,0].plot(ts, s4_I)
 ax[1,0].plot(ts, errors)
 ax[1,0].set_title(r"PI errors")
 ax[1,0].legend([r"$I$", r"$\omega_{gen,ref} - \omega_{gen}$"])
