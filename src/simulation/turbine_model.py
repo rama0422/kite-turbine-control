@@ -8,7 +8,7 @@ from src.simulation.functions import Cp, Cf, MaxTorqueSpeed,T_cap,Efficiency_loo
 
 
 class Turbine:
-    def __init__(self, r_turb, J_gen, J_turb, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, w_limit, N_gear, eff_gear, kp, ki):
+    def __init__(self, r_turb, J_gen, J_turb, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, w_limit, N_gear, eff_gear, kp, ki, time_const_T_gen):
         # turbine params
         self.r_turb = r_turb
         self.A_turb = math.pi *r_turb**2
@@ -22,6 +22,7 @@ class Turbine:
         self.eff_gear = eff_gear
         self.kp = kp
         self.ki = ki
+        self.time_const_T_gen = time_const_T_gen
 
         self.w_limit = w_limit
 
@@ -84,8 +85,7 @@ class Turbine:
         Idot = w_error
 
         # torque dynamics https://www.sciencedirect.com/science/article/pii/S1364032115006814
-        time_const_T_gen = 0.1
-        Tdot_gen = (T_gen_el_ref_uncliped - T_gen_el) / time_const_T_gen
+        Tdot_gen = (T_gen_el_ref_uncliped - T_gen_el) / self.time_const_T_gen
         T_gen_el, _ = MaxTorqueSpeed(T_gen_el, w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
 
         #T_gen_el = MaxTorqueSpeed(w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)

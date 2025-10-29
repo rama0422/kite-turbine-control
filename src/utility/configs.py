@@ -33,7 +33,7 @@ vol = m/rho # for neutral buoyancy
 N_gear = 6.1 # TODO: 
 r_turb = 0.5
 # A_turb = math.pi *r_turb**2
-J_gen = 1.5
+J_gen = 2.0
 J_turb = 0.5
 # P_gen_max = 2000
 
@@ -51,8 +51,9 @@ efficiency_test = np.array([93.60,93.40,93.36,93.30,93.24,93.17,93.09,93.03,92.9
 
 
 eff_gear = 0.99
-kp = 10
+kp = 25
 ki = 10
+time_const_T_gen = 0.015
 # T_gen_el_limit = 2000
 
 # Controllers
@@ -102,9 +103,9 @@ noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0], #TODO
                  "MagZ": [0, 30/3, 0]}
 
 # Simulation
-dt = 0.01
+dt = 0.005
 t_start = 0
-t_end = 60
+t_end = 30
 dt_sim_log = 0.01
 dt_measurement_log = 0.02
 dt_controller = 0.02
