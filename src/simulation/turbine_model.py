@@ -74,7 +74,8 @@ class Turbine:
         #T_gen_el = MaxTorqueSpeed(w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
         #TODO: add limit to turbine to not exceed w_gen
 
-        T_gen_el = T_cap(T_gen_el_uncliped,w_gen,self.w_limit,self.w_gen_max_T,self.T_gen_max,self.m,self.b)
+        # T_gen_el = T_cap(T_gen_el_uncliped,w_gen,self.w_limit,self.w_gen_max_T,self.T_gen_max,self.m,self.b) 
+        T_gen_el, _ = MaxTorqueSpeed(T_gen_el_uncliped, w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
 
         eff = Efficiency_lookup(T_gen_el,w_gen)
         P_gen_out = T_gen_el * w_gen * eff
