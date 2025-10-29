@@ -54,7 +54,7 @@ class FullSystemModel:
 
 
 
-    def systemDynamics(self, t, x, v_current_i):
+    def systemDynamics(self, t, x, log_bool, v_current_i):
         p = x[0]
         pdot = x[1]
         w_gen = x[2]
@@ -66,7 +66,7 @@ class FullSystemModel:
         v_kite_i, v_rel_i, v_rel_s, v_rel_c, v_rel_abs, alpha_pc, alpha_pb, alpha = self.kite.relativeVelocity(p, pdot, r_p, R_pi, v_current_i)
 
         # check if a controller is used and if at least one time step have passed, if so update w_ref using controller
-        if ((self.controller != None) & (len(self.data_log["Fs_thether_abs"]) > 0) & (t - self.t_controller_last >= self.dt_controller)):
+        if ((self.controller != None) & (len(self.data_log["Fs_thether_abs"]) > 0) & (t - self.t_controller_last >= self.dt_controller - 1e-9)):
             # print("Controller used")
             self.t_controller_last = t
 
@@ -77,7 +77,9 @@ class FullSystemModel:
             self.w_ref = self.controller.getSpeedRef(t, P_last, F_tether_last)
 
         #TODO: turbin should in reality get v_rel from the body frame (frame rotated with alpha_pb)
-        [wdot_gen, Idot, Tdot_gen] = self.turbine.turbineDynamics(t, [w_gen, I, T_gen_el], -v_rel_s[0], self.w_ref)
+
+        [wdot_gen, Idot, Tdot_gen] = self.turbine.turbineDynamics(t, [w_gen, I, T_gen_el], -v_rel_s[0], self.w_ref, log_bool)
+
         # F_turb = self.turbine.F_turb
 
         pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether, F_aero_p, F_turb_p = self.kite.accleration(pdot, r_p, r_pp, e1, e3, R_pi, v_rel_c[0], alpha, self.turbine.F_turb)
@@ -108,7 +110,8 @@ class FullSystemModel:
         h_b = R_pb_calc @ R_pi.T @ self.h_i
 
         # sensor values and logging
-        if ((self.sensors != None) & (t - self.t_measurement_last >= self.dt_measurement_log)):
+        if ((self.sensors != None) & (t - self.t_measurement_last >= self.dt_measurement_log - 1e-9)):
+        # if ((self.sensors != None) & (abs(t % self.dt_measurement_log) < 1e-9)):
 
             self.t_measurement_last = t
             # change values to obtaine data similar to the real data
@@ -133,42 +136,43 @@ class FullSystemModel:
         # data logging
         # if ((t - self.t_last_log) >= self.dt_log):
         #     self.t_last_log = t
-        # kinematics
-        self.data_log["ts"].append(t)
-        self.data_log["r"].append(r)
-        self.data_log["r_p"].append(r_p)
-        self.data_log["r_pp"].append(r_pp)
-        self.data_log["v_kite_i"].append(v_kite_i)
-        self.data_log["v_rel_i"].append(v_rel_i)
-        self.data_log["v_rel_abs"].append(v_rel_abs)
-        self.data_log["alpha_pc"].append(alpha_pc)
-        self.data_log["alpha_pb"].append(alpha_pb)
-        self.data_log["alpha"].append(alpha)
+        if log_bool:
+            # kinematics
+            self.data_log["ts"].append(t)
+            self.data_log["r"].append(r)
+            self.data_log["r_p"].append(r_p)
+            self.data_log["r_pp"].append(r_pp)
+            self.data_log["v_kite_i"].append(v_kite_i)
+            self.data_log["v_rel_i"].append(v_rel_i)
+            self.data_log["v_rel_abs"].append(v_rel_abs)
+            self.data_log["alpha_pc"].append(alpha_pc)
+            self.data_log["alpha_pb"].append(alpha_pb)
+            self.data_log["alpha"].append(alpha)
 
-        # forces
-        self.data_log["Fs_aero_i"].append(F_aero_i)
-        self.data_log["Fs_grav_i"].append(F_mg_i)
-        self.data_log["Fs_buoy_i"].append(F_b_i)
-        self.data_log["Fs_tot_i"].append(F_tot_i)
-        self.data_log["Fs_thether_abs"].append(F_thether)
-        self.data_log["Fs_aero_p"].append(F_aero_p)
-        self.data_log["Fs_turb_p"].append(F_turb_p)
+            # forces
+            self.data_log["Fs_aero_i"].append(F_aero_i)
+            self.data_log["Fs_grav_i"].append(F_mg_i)
+            self.data_log["Fs_buoy_i"].append(F_b_i)
+            self.data_log["Fs_tot_i"].append(F_tot_i)
+            self.data_log["Fs_thether_abs"].append(F_thether)
+            self.data_log["Fs_aero_p"].append(F_aero_p)
+            self.data_log["Fs_turb_p"].append(F_turb_p)
 
-        # IMU
-        self.data_log["acc_i"].append(acc_i)
-        self.data_log["acc_p"].append(acc_p)
-        self.data_log["acc_b"].append(acc_b)
-        self.data_log["omega_b"].append(omega_b)
-        self.data_log["h_b"].append(h_b)
+            # IMU
+            self.data_log["acc_i"].append(acc_i)
+            self.data_log["acc_p"].append(acc_p)
+            self.data_log["acc_b"].append(acc_b)
+            self.data_log["omega_b"].append(omega_b)
+            self.data_log["h_b"].append(h_b)
 
-        # states
-        self.data_log["p"].append(p)
-        self.data_log["pdot"].append(pdot)
-        self.data_log["w_gen"].append(w_gen)
-        self.data_log["I"].append(I)
-        self.data_log["T_gen_el"].append(T_gen_el)
+            # states
+            self.data_log["p"].append(p)
+            self.data_log["pdot"].append(pdot)
+            self.data_log["w_gen"].append(w_gen)
+            self.data_log["I"].append(I)
+            self.data_log["T_gen_el"].append(T_gen_el)
 
-        return [pdot, pdotdot, wdot_gen, Idot, Tdot_gen]
+        return np.array([pdot, pdotdot, wdot_gen, Idot, Tdot_gen])
     
     # faster then scipy.linalg.logm
     def so3MLog(self, R):

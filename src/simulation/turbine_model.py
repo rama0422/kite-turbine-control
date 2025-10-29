@@ -53,7 +53,7 @@ class Turbine:
                          "vs_rel": []}
 
 
-    def turbineDynamics(self, t, x, v_rel, w_ref):
+    def turbineDynamics(self, t, x, v_rel, w_ref, log_bool=True):
         w_gen = x[0]
         I = x[1]
         T_gen_el = x[2]
@@ -91,9 +91,11 @@ class Turbine:
         #T_gen_el = MaxTorqueSpeed(w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
         #TODO: add limit to turbine to not exceed w_gen
 
-        # T_gen_el = T_cap(T_gen_el_uncliped,w_gen,self.w_limit,self.w_gen_max_T,self.T_gen_max,self.m,self.b)
+        # T_gen_el = T_cap(T_gen_el_uncliped,w_gen,self.w_limit,self.w_gen_max_T,self.T_gen_max,self.m,self.b) 
+        # T_gen_el, _ = MaxTorqueSpeed(T_gen_el_uncliped, w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
 
-        
+        eff = Efficiency_lookup(T_gen_el,w_gen)
+        P_gen_out = T_gen_el * w_gen * eff
 
 
 
@@ -103,16 +105,17 @@ class Turbine:
         self.T_gen_el = T_gen_el
 
         # log data
-        self.data_log["ts"].append(t)
-        self.data_log["Fs_turb"].append(F_turb)
-        self.data_log["Ts_gen_mech"].append(T_gen_mech)
-        self.data_log["Ts_gen_el_ref_uncliped"].append(T_gen_el_ref_uncliped)
-        self.data_log["Ts_gen_el_ref"].append(T_gen_el_ref)
-        self.data_log["Ts_gen_el"].append(T_gen_el)
-        self.data_log["ws_ref"].append(w_ref)
-        self.data_log["errors"].append(w_error)
-        self.data_log["TSRs"].append(TSR)
-        self.data_log["P_gen_out"].append(P_gen_out)
-        self.data_log["vs_rel"].append(v_rel)
+        if log_bool:
+            self.data_log["ts"].append(t)
+            self.data_log["Fs_turb"].append(F_turb)
+            self.data_log["Ts_gen_mech"].append(T_gen_mech)
+            self.data_log["Ts_gen_el_ref_uncliped"].append(T_gen_el_ref_uncliped)
+            self.data_log["Ts_gen_el_ref"].append(T_gen_el_ref)
+            self.data_log["Ts_gen_el"].append(T_gen_el)
+            self.data_log["ws_ref"].append(w_ref)
+            self.data_log["errors"].append(w_error)
+            self.data_log["TSRs"].append(TSR)
+            self.data_log["P_gen_out"].append(P_gen_out)
+            self.data_log["vs_rel"].append(v_rel)
 
-        return [wdot_gen, Idot, Tdot_gen]
+        return np.array([wdot_gen, Idot, Tdot_gen])

@@ -115,7 +115,7 @@ class Kite:
         
 
     # Stand alone kite dynamics with inserted F_turb
-    def kiteDynamics(self, t, x, v_current_i, F_turb = 0):
+    def kiteDynamics(self, t, x, v_current_i, F_turb=0, log_bool=True):
         p = x[0]
         pdot = x[1]
 
@@ -129,22 +129,23 @@ class Kite:
         # data logging
         # if ((t - self.t_last_log) >= self.dt_log):
         #     self.t_last_log = t
-        self.data_log["ts"].append(t)
-        self.data_log["r"].append(r)
-        self.data_log["r_p"].append(r_p)
-        self.data_log["r_pp"].append(r_pp)
-        self.data_log["v_kite_i"].append(v_kite_i)
-        self.data_log["v_rel_i"].append(v_rel_i)
-        self.data_log["v_rel_abs"].append(v_rel_abs)
-        self.data_log["alpha_pc"].append(alpha_pc)
-        self.data_log["alpha_pb"].append(alpha_pb)
-        self.data_log["alpha"].append(alpha)
-        self.data_log["Fs_aero_i"].append(F_aero_i)
-        self.data_log["Fs_grav_i"].append(F_mg_i)
-        self.data_log["Fs_buoy_i"].append(F_b_i)
-        self.data_log["Fs_tot_i"].append(F_tot_i)
-        self.data_log["Fs_thether_abs"].append(F_thether)
-        self.data_log["Fs_aero_p"].append(F_aero_p)
-        self.data_log["Fs_turb_p"].append(F_turb_p)
+        if log_bool:
+            self.data_log["ts"].append(t)
+            self.data_log["r"].append(r)
+            self.data_log["r_p"].append(r_p)
+            self.data_log["r_pp"].append(r_pp)
+            self.data_log["v_kite_i"].append(v_kite_i)
+            self.data_log["v_rel_i"].append(v_rel_i)
+            self.data_log["v_rel_abs"].append(v_rel_abs)
+            self.data_log["alpha_pc"].append(alpha_pc)
+            self.data_log["alpha_pb"].append(alpha_pb)
+            self.data_log["alpha"].append(alpha)
+            self.data_log["Fs_aero_i"].append(F_aero_i)
+            self.data_log["Fs_grav_i"].append(F_mg_i)
+            self.data_log["Fs_buoy_i"].append(F_b_i)
+            self.data_log["Fs_tot_i"].append(F_tot_i)
+            self.data_log["Fs_thether_abs"].append(F_thether)
+            self.data_log["Fs_aero_p"].append(F_aero_p)
+            self.data_log["Fs_turb_p"].append(F_turb_p)
 
-        return [pdot, pdotdot]
+        return np.array([pdot, pdotdot])
