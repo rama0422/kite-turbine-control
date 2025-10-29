@@ -77,13 +77,16 @@ class Turbine:
         """Modified: w_error>0 (want to slow down) -> Te>0 -> BREAKING TORQUE -> Decrease w' """
         w_error = w_gen - w_ref
         T_gen_el_ref_uncliped = self.kp * w_error + self.ki * I
-        T_gen_el_ref = T_cap(T_gen_el_ref_uncliped, w_gen, self.w_limit, self.w_gen_max_T, self.T_gen_max, self.m, self.b)
+        # T_gen_el_ref = T_cap(T_gen_el_ref_uncliped, w_gen, self.w_limit, self.w_gen_max_T, self.T_gen_max, self.m, self.b)
+        # T_gen_el_ref, _ = MaxTorqueSpeed(T_gen_el_ref_uncliped, w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
+        T_gen_el_ref =T_gen_el_ref_uncliped
 
         Idot = w_error
 
         # torque dynamics https://www.sciencedirect.com/science/article/pii/S1364032115006814
-        time_const_T_gen = 0.2
-        Tdot_gen = (T_gen_el_ref - T_gen_el) / time_const_T_gen
+        time_const_T_gen = 0.1
+        Tdot_gen = (T_gen_el_ref_uncliped - T_gen_el) / time_const_T_gen
+        T_gen_el, _ = MaxTorqueSpeed(T_gen_el, w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
 
         #T_gen_el = MaxTorqueSpeed(w_gen, self.T_gen_max, self.T_gen_max_w, self.w_gen_max, self.w_gen_max_T, self.m, self.b)
         #TODO: add limit to turbine to not exceed w_gen

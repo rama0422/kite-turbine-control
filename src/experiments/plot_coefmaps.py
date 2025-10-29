@@ -2,8 +2,8 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.utility.configs import T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T
-from src.simulation.functions import C_L, C_D, Cp, Cf, MaxTorqueSpeed
+from src.utility.configs import T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, w_limit
+from src.simulation.functions import C_L, C_D, Cp, Cf, MaxTorqueSpeed, T_cap
 
 # lift and drag coefficients
 alphas = np.linspace(-70, 70, 100) * math.pi / 180
@@ -108,8 +108,8 @@ m, b = np.polyfit(ws, Ts, 1)
 print(m,b)
 
 l = 100
-ws_in = np.linspace(0, w_gen_max+200, l)
-torques_in = np.ones(l) * 1000
+ws_in = np.linspace(0, w_gen_max+400, l)
+torques_in = np.ones(l) * 500
 
 # l = 10000
 # # ws_in = np.linspace(1280 / 60 * (2*math.pi), 1340 / 60 * (2*math.pi), l)
@@ -119,7 +119,10 @@ torques_in = np.ones(l) * 1000
 
 tws = np.column_stack((ws_in, torques_in))
 # print(tws)
-torques_out, ws_out = zip(*[MaxTorqueSpeed(tw[1], tw[0], T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, m, b) for tw in tws])
+# torques_out, ws_out = zip(*[MaxTorqueSpeed(tw[1], tw[0], T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, m, b) for tw in tws])
+torques_out = [T_cap(tw[1], tw[0], w_limit, w_gen_max_T, T_gen_max, m, b) for tw in tws]
+ws_out = ws_in
+# T_requested,speed_rpm,speedLimit,corner_point_speed,corner_point_torque,m,b
 
 fig = plt.figure()
 
