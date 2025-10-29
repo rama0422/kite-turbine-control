@@ -284,7 +284,7 @@ ax[1,0].set_ylim([-50, 50])
 ax[1,0].grid()
 
 ax[2,0].plot(ts_sensor, torque_meas, label=r"$T_{gen,el,meas.}$") if plot_meas else None
-ax[2,0].plot(ts, s5_T_gen_el, label=r"$T_{gen,el} (state 5)$")
+ax[2,0].plot(ts, Ts_gen_el, label=r"$T_{gen,el} (state 5)$")
 ax[2,0].plot(ts, Ts_gen_el_ref_uncliped, label=r"$T_{gen,el,ref(uncliped)}$")
 ax[2,0].plot(ts, Ts_gen_el_ref, label=r"$T_{gen,el,ref}$")
 ax[2,0].plot(ts, Ts_gen_mech, label=r"$T_{gen,mech}$")
