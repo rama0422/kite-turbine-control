@@ -102,8 +102,14 @@ noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0], #TODO
                  "MagZ": [0, 30/3, 0]}
 
 # Simulation
-dt = 0.02
+dt = 0.01
+t_start = 0
 t_end = 60
 dt_sim_log = 0.01
 dt_measurement_log = 0.02
 dt_controller = 0.02
+
+p0 = 0
+pdot0 = 0.6
+w0_gen = 2100 / 60 * 2 * math.pi
+I0 = 0

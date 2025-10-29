@@ -8,6 +8,7 @@ from src.simulation.turbine_model import Turbine
 from src.controllers.og_controller import OgController
 from src.simulation.full_system_model import FullSystemModel
 from src.simulation.sensors_model import SensorsModel
+from src.simulation.RK4_solver import RK4Solver
 # from src.utility.configs import rho, g, S, m, vol, r_turb, J_gen, T_gen_max, T_gen_max_w, w_gen_max, w_gen_max_T, N_gear, eff_gear, kp, ki, P_mean_init, F_tether_mean_init, og_controller_div_factor, og_controller_tsr_const, dt, t_end
 from src.utility.configs import *
 from src.simulation.functions import path
@@ -20,28 +21,29 @@ sensors = SensorsModel(noise_configs)
 # kiteSystem = FullSystemModel(kite, trubine) # for running w/o controller and use predetermined w_ref
 kiteSystem = FullSystemModel(kite, trubine, w_ref_base, dt_controller, dt_measurement_log, h_i, ogController, sensors)
 
-# simulation params
-v_current_i = np.array([2,0,0])
-p0 = 0
-pdot0 = 0.6
-w0_gen = 2100 / 60 * 2 * math.pi
-I0 = 0
-x0 = [p0, pdot0, w0_gen, I0]
 
+x0 = [p0, pdot0, w0_gen, I0]
 plot_meas = True
 
 # systemDynamics(self, t, x, v_current_i, w_ref = w_ref_base)
-sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, max_step = dt, t_eval=np.arange(0, t_end, 0.004)) #, t_eval=np.arange(0, t_end, dt)
+# sol = solve_ivp(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), [0, t_end], x0, max_step = dt, t_eval=np.arange(0, t_end, 0.004)) #, t_eval=np.arange(0, t_end, dt)
 
-print(sol)
+# rk4Solver = RK4Solver(lambda t, x: kiteSystem.systemDynamics(t, x, v_current_i), x0, t0=0.0)
+rk4Solver = RK4Solver(kiteSystem.systemDynamics, x0, t_start)
+
+rk4Solver.solveSteps(dt, t_end, v_current_i)
+
+
+
+# print(sol)
 
 # Kite
 ts = np.array(kiteSystem.data_log["ts"])
 print("kite dyn steps: ", len(ts))
-print("sol steps: ", len(sol.t))
-print(len(sol.y[2]))
+# print("sol steps: ", len(sol.t))
+# print(len(sol.y[2]))
 # print(sol.t[0:30])
-# print(ts[0:30])
+print(ts[0:30])
 
 # states
 s1_p = np.array(kiteSystem.data_log["p"])

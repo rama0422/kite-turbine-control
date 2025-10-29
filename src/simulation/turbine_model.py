@@ -52,7 +52,7 @@ class Turbine:
                          "vs_rel": []}
 
 
-    def turbineDynamics(self, t, x, v_rel, w_ref):
+    def turbineDynamics(self, t, x, v_rel, w_ref, log_bool=True):
         w_gen = x[0]
         I = x[1]
 
@@ -91,15 +91,16 @@ class Turbine:
         Idot = w_error
         wdot_gen = (T_gen_mech - T_gen_el) / (self.J_gen + self.J_turb / self.N_gear**2)
 
-        self.data_log["ts"].append(t)
-        self.data_log["Fs_turb"].append(F_turb)
-        self.data_log["Ts_gen_mech"].append(T_gen_mech)
-        self.data_log["Ts_gen_el_uncliped"].append(T_gen_el_uncliped)
-        self.data_log["Ts_gen_el"].append(T_gen_el)
-        self.data_log["ws_ref"].append(w_ref)
-        self.data_log["errors"].append(w_error)
-        self.data_log["TSRs"].append(TSR)
-        self.data_log["P_gen_out"].append(P_gen_out)
-        self.data_log["vs_rel"].append(v_rel)
+        if log_bool:
+            self.data_log["ts"].append(t)
+            self.data_log["Fs_turb"].append(F_turb)
+            self.data_log["Ts_gen_mech"].append(T_gen_mech)
+            self.data_log["Ts_gen_el_uncliped"].append(T_gen_el_uncliped)
+            self.data_log["Ts_gen_el"].append(T_gen_el)
+            self.data_log["ws_ref"].append(w_ref)
+            self.data_log["errors"].append(w_error)
+            self.data_log["TSRs"].append(TSR)
+            self.data_log["P_gen_out"].append(P_gen_out)
+            self.data_log["vs_rel"].append(v_rel)
 
-        return [wdot_gen, Idot]
+        return np.array([wdot_gen, Idot])
