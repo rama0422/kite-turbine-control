@@ -3,7 +3,7 @@ import math
 import scipy
 
 # from src.utility.configs import w_ref_base, g
-from src.simulation.functions import R_pb, R_pc
+from src.simulation.functions import R_pb, R_pc, Euler_zyx_from_R, Gyro_from_euler
 
 class FullSystemModel:
     def __init__(self, kite, turbine, w_ref_base, dt_controller, dt_measurement_log, h_i, controller=None, sensors=None):
@@ -18,6 +18,7 @@ class FullSystemModel:
 
         # variables
         self.R_pi_last = np.identity(3)
+        self.R_pb_last = np.identity(3)
         self.t_last = -0.02
         self.t_controller_last = -1
         self.w_ref = w_ref_base
@@ -85,33 +86,39 @@ class FullSystemModel:
         pdotdot, F_aero_i, F_mg_i, F_b_i, F_tot_i, F_thether, F_aero_p, F_turb_p = self.kite.accleration(pdot, r_p, r_pp, e1, e3, R_pi, v_rel_c[0], alpha, self.turbine.F_turb)
         self.F_thether = F_thether
 
-
-        # IMU measurements
-        R_pb_calc = R_pb(alpha_pb)
-        # acceleations
-        acc_i = (r_pp * pdot**2 + r_p * pdotdot) # g and b not added since we have zero bouyance + gravity,  + np.array([0,0,g])
-        acc_p = R_pi.T @ acc_i
-        acc_b = R_pb_calc @ acc_p
-
-        # angular velocities #TODO: does not curently work, think it gets very large for y and z sometimes.
-        dR_pi = self.R_pi_last.T @ R_pi
-        # skewed = scipy.linalg.logm(dR_pi)
-        skewed = self.so3MLog(dR_pi)
-        dt = t - self.t_last
-        omega_p = np.array([skewed[2,1], skewed[0,2], skewed[1,0]]) / (dt)
-
-        omega_b = R_pb_calc @ omega_p
-
-        self.R_pi_last = R_pi
-        self.t_last = t
-
-        # Magnetometer
-        
-        h_b = R_pb_calc @ R_pi.T @ self.h_i
-
         # sensor values and logging
         if ((self.sensors != None) & (t - self.t_measurement_last >= self.dt_measurement_log - 1e-9)):
-        # if ((self.sensors != None) & (abs(t % self.dt_measurement_log) < 1e-9)):
+
+            # IMU measurements
+            R_pb_calc = R_pb(alpha_pb) # p -> b
+            # acceleations
+            acc_i = (r_pp * pdot**2 + r_p * pdotdot) # g and b not added since we have zero bouyance + gravity,  + np.array([0,0,g])
+            acc_p = R_pi.T @ acc_i
+            acc_b = R_pb_calc @ acc_p
+
+            """Gyroscope measurement"""
+            R_bi_present = R_pb_calc @ R_pi.T # i -> b
+            R_bi_past = self.R_pb_last @ self.R_pi_last.T
+
+            DeltaR = R_bi_present @ R_bi_past.T # previous body -> current body
+            dt = t - self.t_last
+
+            yaw,pitch,roll = Euler_zyx_from_R(DeltaR)
+
+            yaw_dot   = yaw / dt
+            pitch_dot = pitch / dt
+            roll_dot   = roll / dt
+
+            omega_b = Gyro_from_euler(yaw, yaw_dot, pitch, pitch_dot, roll, roll_dot) #Gyro measurement in degrees?
+
+            # Magnetometer
+            h_b = R_pb_calc @ R_pi.T @ self.h_i
+
+            # if ((self.sensors != None) & (abs(t % self.dt_measurement_log) < 1e-9)):
+            
+            self.R_pi_last = R_pi
+            self.R_pb_last = R_pb_calc
+            self.t_last = t
 
             self.t_measurement_last = t
             # change values to obtaine data similar to the real data
@@ -159,11 +166,11 @@ class FullSystemModel:
             self.data_log["Fs_turb_p"].append(F_turb_p)
 
             # IMU
-            self.data_log["acc_i"].append(acc_i)
-            self.data_log["acc_p"].append(acc_p)
-            self.data_log["acc_b"].append(acc_b)
-            self.data_log["omega_b"].append(omega_b)
-            self.data_log["h_b"].append(h_b)
+            self.data_log["acc_i"].append(np.array([0,0,0]))
+            self.data_log["acc_p"].append(np.array([0,0,0]))
+            self.data_log["acc_b"].append(np.array([0,0,0]))
+            self.data_log["omega_b"].append(np.array([0,0,0]))
+            self.data_log["h_b"].append(np.array([0,0,0]))
 
             # states
             self.data_log["p"].append(p)
@@ -175,6 +182,7 @@ class FullSystemModel:
         return np.array([pdot, pdotdot, wdot_gen, Idot, Tdot_gen])
     
     # faster then scipy.linalg.logm
+    """
     def so3MLog(self, R):
         c = (np.trace(R) - 1.0) / 2.0
         c = np.clip(c, -1.0, 1.0)
@@ -182,3 +190,4 @@ class FullSystemModel:
         if theta < 1e-8:
             return 0.5 * (R - R.T)
         return theta / (2.0 * np.sin(theta)) * (R - R.T)
+    """

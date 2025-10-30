@@ -229,6 +229,30 @@ def T_cap(T_requested,speed_rpm,speedLimit,corner_point_speed,corner_point_torqu
     return T_capped
      
 
+
+def Euler_zyx_from_R(R):
+
+    s = -R[2,0]
+    s = np.clip(s, -1.0, 1.0)
+    pitch = np.arcsin(s) # pitch
+    yaw   = np.arctan2(R[1,0], R[0,0]) # yaw ψ
+    roll   = np.arctan2(R[2,1], R[2,2]) # roll φ
+
+    return yaw, pitch, roll
+
+def Gyro_from_euler(yaw, yaw_dot, pitch, pitch_dot, roll, roll_dot):
+    
+    euler_angles_velocity = np.array([roll_dot,pitch_dot,yaw_dot])
+
+    T_matrix = np.array([
+        [1, 0, -np.sin(pitch)],
+        [0, np.cos(roll), np.sin(roll)*np.cos(pitch)],
+        [0, -np.sin(roll), np.cos(roll)*np.cos(pitch)]
+    ])
+    
+
+    return T_matrix @ euler_angles_velocity
+
 # if (w_gen < self.w_gen_max_T):
 #             T_gen_el = max(min(T_gen_el, self.T_gen_max), -self.T_gen_max)
 #         else:

@@ -95,9 +95,9 @@ noise_configs = {"Elevation": [0, 0.2*1e-2*60/3, 0], #TODO
                  "AccX": [0, 0.2/3, 0], #TODO
                  "AccY": [0, 0.2/3, 0],
                  "AccZ": [0, 0.4/3, 0],
-                 "GyroX": [0, 0.4/3, 0], #TODO
-                 "GyroY": [0, 1/3, 0],
-                 "GyroZ": [0, 0.01/3, 0],
+                 "GyroX": [0,0,0], #[0, 0.4/3, 0], #TODO CURRENTLY no noise to check stability..
+                 "GyroY": [0,0,0], #[0, 1/3, 0],
+                 "GyroZ": [0,0,0], #[0, 0.01/3, 0],
                  "MagX": [0, 10/3, 0], #TODO
                  "MagY": [0, 80/3, 0],
                  "MagZ": [0, 30/3, 0]}
