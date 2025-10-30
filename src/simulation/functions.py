@@ -60,6 +60,9 @@ elif (viviani_type == "elliptic"):
     period = 4*sp.pi
     y_half = sp.sqrt(R_sym**2 - (sub + a_sym * sp.cos(p_sym))**2 - b_sym**2 * sp.sin(p_sym)**2 + eps)
     y = sp.Piecewise((y_half, (p_sym % period >= 0) & (p_sym % period <= 2*sp.pi)), (-y_half, (p_sym % period > 2*sp.pi) & (p_sym % period < 4*sp.pi)))
+    # eps = 0.07
+    # sign = sp.tanh(sp.sin(p_sym / 2) / eps)
+    # y = sign * y_half
     z = b_sym * sp.sin(p_sym)
 
     # Rotate
@@ -86,6 +89,21 @@ elif (viviani_type == "elliptic"):
 
     def path_pp(p):
         return np.array(path_pp_lamb(p, R_path, a_path, b_path, theta_path))
+    
+    # def path_p(p, p_last):
+    #     eps = 0.01
+    #     if (np.abs(p % (2*np.pi)) < eps):
+    #         print("clos to discount. at p: ", p, " used p_last: ", p_last)
+    #         return np.array(path_p_lamb(p_last, R_path, a_path, b_path, theta_path))
+    #     else:
+    #         return np.array(path_p_lamb(p, R_path, a_path, b_path, theta_path))
+
+    # def path_pp(p, p_last):
+    #     eps = 0.01
+    #     if (np.abs(p % (2*np.pi)) < eps):
+    #         return np.array(path_pp_lamb(p_last, R_path, a_path, b_path, theta_path))
+    #     else:
+    #         return np.array(path_pp_lamb(p, R_path, a_path, b_path, theta_path))
 
 
 """Get efficiency map"""

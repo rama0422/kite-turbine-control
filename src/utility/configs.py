@@ -110,7 +110,7 @@ dt_sim_log = 0.01
 dt_measurement_log = 0.02
 dt_controller = 0.02
 
-p0 = 0
+p0 = 0.1
 pdot0 = 0.6
 w0_gen = 2100 / 60 * 2 * math.pi
 I0 = 0

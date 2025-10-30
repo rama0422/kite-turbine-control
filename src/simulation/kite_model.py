@@ -17,6 +17,8 @@ class Kite:
         # self.F_buoy = np.array([0,0,0])
         # self.F_tot = np.array([0,0,0])
         self.F_thether = 0
+        self.r_p_pre_discount = np.array([0,0,0])
+        self.r_pp_pre_discount = np.array([0,0,0])
 
         #TODO: retrive acc and gyro data for simulated IMU
         #TODO: add measurments with noise?
@@ -46,6 +48,17 @@ class Kite:
         r = path(p)
         r_p = path_p(p)
         r_pp = path_pp(p)
+    
+        eps = 0.002
+        if (np.abs(p % (2*np.pi)) < eps):
+            r_p = self.r_p_pre_discount
+            r_pp = self.r_pp_pre_discount
+            print("clos to discount. at p: ", p, " used last r_p and _pp: ", r_p, r_pp)
+        else:
+            r_p = path_p(p)
+            r_pp = path_pp(p)
+            self.r_p_pre_discount = r_p
+            self.r_pp_pre_discount = r_pp
 
         # TODO: pre calculate and use as functions
         # Stability basis
